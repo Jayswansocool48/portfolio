@@ -53,7 +53,7 @@ window.GAMES = [
     featured: true,
     current: true,
     tint: "#d9a92b",
-    summary: "Grab a fare, beat the clock, pull a stunt on the way.",
+    summary: "Pick up fares and race the clock across a stunt-filled city.",
     about: [
       "You tear through city streets picking up passengers and dropping them off before the timer runs out, with jumps and stunts along the route.",
       "I'm modeling the city and the cars right now.",
@@ -105,7 +105,7 @@ window.ASSETS = [
     added: "2025-06-01",
     tint: "#d0782c",
     summary: "Low-poly props for roads and racing scenes.",
-    about: ["Cones, barriers, signs and street furniture, modeled low-poly so you can fill a whole city block without hurting frame rate. I'm building it alongside Crazy Taxi."],
+    about: ["Cones, barriers, signs and street furniture for city and racing scenes, modeled low-poly. I'm building the pack alongside Crazy Taxi."],
     show: true,
   },
   {

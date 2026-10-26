@@ -25,6 +25,21 @@ Status for the Iron Lantern Studios site. "N/A" means the site has nothing the r
 | 19 | License every font and image | Done: Archivo and JetBrains Mono under SIL OFL 1.1 (licenses in `fonts/`), Lenis under MIT (license in `vendor/`). No third-party images. |
 | 20 | Data deletion requests | Done: the privacy policy explains how to ask, with a 30-day answer. The site itself holds no data. |
 
+## Legal holes (4a)
+
+| Item | Status |
+|------|--------|
+| Self-hosted fonts and scripts | Done: Archivo, JetBrains Mono and Lenis ship in the repo. The site makes no third-party request on load. |
+| No keystroke or session-replay capture | Done: no analytics or replay tools of any kind. |
+| Age check on sign-up | N/A: no sign-up or accounts. The contact form only opens your own email app. |
+| Postal address and one-click unsubscribe in email | N/A: the site sends no email. Add both before any newsletter or launch email. |
+| Renewal terms beside the buy button | N/A: no subscriptions. Purchases happen on itch.io, Fab or the Roblox Creator Store. |
+| Upload disclaimer | N/A: no uploads. |
+
+## Motion
+
+Sheets, the phone menu, search, the toast, section reveals, image fades and the home carousel all run on closed-form damped springs in `motion.js`. A spring keeps its velocity, so grabbing or reversing an animation mid-flight continues smoothly, and a flick on a sheet hands its speed to the closing spring. Page and theme transitions use the same spring, sampled into a CSS `linear()` curve. The site plays no sound. Reduced-motion settings skip every animation.
+
 ## UX patterns
 
 In: command menu (Ctrl+K), shortcut hints, copy toasts, pre-rendering (speculation rules on hover), tinted image placeholders, view transitions within and between pages, swipe-to-dismiss sheets with Esc, interruptible animations, 44 px hit targets, safe area insets, tabular numbers, balanced headlines, continuous corners.

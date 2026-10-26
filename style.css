@@ -33,7 +33,9 @@
   --r-card: 14px;
   --r-ctrl: 10px;
   --r-chip: 6px;
-  --ease: cubic-bezier(.2, .8, .2, 1);
+  /* A damped spring (stiffness 320, damping 34) sampled into a CSS curve, for page transitions. */
+  --spring: linear(0, 0.0164, 0.0581, 0.1162, 0.1837, 0.2558, 0.3288, 0.4002, 0.4682, 0.5319, 0.5905, 0.6438, 0.6918, 0.7346, 0.7725, 0.8058, 0.8349, 0.8602, 0.8821, 0.9009, 0.917, 0.9308, 0.9425, 0.9523, 0.9607, 0.9677, 0.9735, 0.9784, 0.9824, 0.9858, 0.9885, 0.9908, 0.9927, 0.9942, 0.9954, 0.9964, 0.9972, 0.9979, 0.9984, 0.9988, 0.9991);
+  --spring-ms: 430ms;
 
   color-scheme: dark;
 }
@@ -57,7 +59,7 @@
 
 /* Page-to-page fades in browsers that support them */
 @view-transition { navigation: auto; }
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: .28s; }
+::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: var(--spring-ms); animation-timing-function: var(--spring); }
 .bar { view-transition-name: bar; }
 
 * { box-sizing: border-box; }
@@ -176,7 +178,7 @@ h3 { margin: 0 0 1.25rem; font: 400 .74rem var(--mono); text-transform: uppercas
 .btn {
   display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 1.2rem;
   background: var(--flame); color: var(--flame-ink); text-decoration: none; font-weight: 600;
-  border: 1px solid var(--flame); border-radius: var(--r-ctrl); transition: filter .2s, border-color .2s;
+  border: 1px solid var(--flame); border-radius: var(--r-ctrl);
 }
 .btn:hover { filter: brightness(1.07); }
 .btn.ghost { background: none; color: var(--text); border-color: var(--line); }
@@ -214,7 +216,7 @@ h3 { margin: 0 0 1.25rem; font: 400 .74rem var(--mono); text-transform: uppercas
 .slide-art .cover { aspect-ratio: 4 / 3; }
 .dots { display: flex; justify-content: center; gap: 2px; margin-top: 1rem; }
 .dots button { width: 44px; height: 44px; border: 0; background: none; display: grid; place-items: center; }
-.dots button::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: width .25s var(--ease), background-color .25s; }
+.dots button::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
 .dots button[aria-selected="true"]::before { width: 24px; border-radius: 4px; background: var(--flame); }
 
 /* The After Hours screen */
@@ -246,7 +248,6 @@ h3 { margin: 0 0 1.25rem; font: 400 .74rem var(--mono); text-transform: uppercas
 .card {
   display: flex; flex-direction: column; min-width: 0; background: var(--surface);
   border: 1px solid var(--line); border-radius: var(--r-card); overflow: hidden;
-  transition: border-color .25s;
 }
 .card:hover { border-color: color-mix(in srgb, var(--flame) 45%, var(--line)); }
 .card-main {
@@ -254,10 +255,8 @@ h3 { margin: 0 0 1.25rem; font: 400 .74rem var(--mono); text-transform: uppercas
 }
 .cover { position: relative; aspect-ratio: 16 / 10; background: var(--tint, #0c0e0f); overflow: hidden; }
 .cover canvas, .cover img { width: 100%; height: 100%; display: block; object-fit: cover; }
-.cover canvas { image-rendering: pixelated; transition: transform .6s var(--ease); }
-.card:hover .cover canvas, .card:hover .cover img { transform: scale(1.03); }
-.cover img { opacity: 0; transition: opacity .4s, transform .6s var(--ease); }
-.cover img.loaded { opacity: 1; }
+.cover canvas { image-rendering: pixelated; }
+.cover img { opacity: 0; }
 .card-text { display: grid; gap: .35rem; padding: 1.1rem 1.2rem .4rem; }
 .card-meta { font: 400 .74rem var(--mono); color: var(--muted); }
 .card-title { font-stretch: 125%; font-weight: 740; font-size: 1.35rem; letter-spacing: -.01em; line-height: 1.15; }
@@ -369,29 +368,28 @@ a.h-value:hover { color: var(--flame); }
   position: fixed; left: 50%; bottom: max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + .75rem)); z-index: 40;
   transform: translate(-50%, 1rem); opacity: 0; pointer-events: none;
   background: var(--text); color: var(--bg); padding: .7rem 1rem; border-radius: var(--r-ctrl); font-size: .9rem;
-  transition: transform .25s var(--ease), opacity .25s;
 }
-.toast.on { transform: translate(-50%, 0); opacity: 1; }
 
-/* Sections ease in as you reach them. Without script they simply show. */
-.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s var(--ease); }
+/* Sections spring in as you reach them (site.js). Without script they simply show. */
+.js .reveal { opacity: 0; transform: translateY(24px); }
 .js .reveal.shown { opacity: 1; transform: none; }
 
 /* ---- Dialogs ---- */
-/* Dialogs never scroll themselves, so no scrollbar flashes while a sheet slides in. */
-dialog { padding: 0; border: 0; background: none; color: var(--text); max-width: none; max-height: none; overflow: hidden; }
-dialog::backdrop { background: var(--shade); opacity: 0; transition: opacity .25s; }
-dialog.in::backdrop { opacity: 1; }
-
-.sheet { margin: 0 0 0 auto; height: 100%; width: min(36rem, 100%); }
-.sheet-body {
-  position: relative; height: 100%; overflow-y: auto; overflow-x: hidden; background: var(--bg); border-left: 1px solid var(--line);
-  padding: max(1.5rem, env(safe-area-inset-top, 0px)) max(1.75rem, env(safe-area-inset-right, 0px)) max(2rem, env(safe-area-inset-bottom, 0px)) 1.75rem;
-  transform: translateX(100%); transition: transform .34s var(--ease);
-  touch-action: pan-y; overscroll-behavior: contain;
+/* Each dialog fills the screen and never scrolls itself, so no scrollbar can flash while a
+   panel slides in. Its scrim and panel move on springs driven from site.js. */
+dialog {
+  position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none;
+  margin: 0; padding: 0; border: 0; background: none; color: var(--text); overflow: hidden;
 }
-.sheet.in .sheet-body { transform: none; }
-.sheet.dragging .sheet-body { transition: none; }
+dialog::backdrop { background: transparent; }
+.scrim { position: absolute; inset: 0; background: var(--shade); opacity: 0; }
+
+.sheet-body {
+  position: absolute; top: 0; right: 0; bottom: 0; width: min(36rem, 100%);
+  overflow-y: auto; overflow-x: hidden; background: var(--bg); border-left: 1px solid var(--line);
+  padding: max(1.5rem, env(safe-area-inset-top, 0px)) max(1.75rem, env(safe-area-inset-right, 0px)) max(2rem, env(safe-area-inset-bottom, 0px)) 1.75rem;
+  transform: translateX(100%); touch-action: pan-y; overscroll-behavior: contain; will-change: transform;
+}
 .grip { display: none; }
 .close {
   position: absolute; top: max(1rem, env(safe-area-inset-top, 0px)); right: max(1rem, env(safe-area-inset-right, 0px));
@@ -406,17 +404,14 @@ dialog.in::backdrop { opacity: 1; }
 .tags li { font: 400 .74rem var(--mono); padding: .3rem .55rem; border: 1px solid var(--line); border-radius: var(--r-chip); color: var(--muted); }
 .media { display: grid; gap: 10px; margin-top: 1.75rem; }
 .shot { aspect-ratio: 16 / 9; max-width: 100%; border-radius: 10px; overflow: hidden; background: var(--tint, var(--surface)); }
-.shot img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s; }
-.shot img.loaded { opacity: 1; }
+.shot img { width: 100%; height: 100%; object-fit: cover; opacity: 0; }
 .media-note { margin: 0; font: 400 .76rem var(--mono); color: var(--muted); }
 .links { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.5rem; }
 
-.cmdk { margin: 12vh auto auto; width: min(34rem, calc(100% - 32px)); }
 .cmdk-box {
-  background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
-  transform: translateY(-8px) scale(.98); opacity: 0; transition: transform .2s var(--ease), opacity .2s;
+  position: relative; margin: 12vh auto 0; width: min(34rem, calc(100% - 32px));
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; opacity: 0;
 }
-.cmdk.in .cmdk-box { transform: none; opacity: 1; }
 #cmdk-input {
   width: 100%; border: 0; border-bottom: 1px solid var(--line); background: none;
   font-size: 1.05rem; padding: 1.1rem 1.2rem; outline: none;
@@ -431,13 +426,12 @@ dialog.in::backdrop { opacity: 1; }
 #cmdk-list li.none { color: var(--muted); cursor: default; }
 .cmdk-hint { margin: 0; padding: .7rem 1.2rem; border-top: 1px solid var(--line); font-size: .78rem; color: var(--muted); display: flex; gap: .35rem; align-items: center; flex-wrap: wrap; }
 
-.menu { margin: 0 0 0 auto; height: 100%; width: min(20rem, 85%); }
 .menu-body {
-  height: 100%; background: var(--bg); border-left: 1px solid var(--line); display: flex; flex-direction: column;
+  position: absolute; top: 0; right: 0; bottom: 0; width: min(20rem, 85%);
+  background: var(--bg); border-left: 1px solid var(--line); display: flex; flex-direction: column;
   padding: max(5rem, calc(env(safe-area-inset-top, 0px) + 4rem)) max(1.5rem, env(safe-area-inset-right, 0px)) 2rem 1.5rem;
-  transform: translateX(100%); transition: transform .3s var(--ease);
+  transform: translateX(100%); touch-action: pan-y; will-change: transform;
 }
-.menu.in .menu-body { transform: none; }
 .menu-body a {
   text-decoration: none; font-stretch: 125%; font-weight: 740; font-size: 1.6rem; min-height: 56px;
   display: flex; align-items: center; color: var(--muted);
@@ -458,8 +452,8 @@ dialog.in::backdrop { opacity: 1; }
 }
 @media (max-width: 700px) {
   .cards { grid-template-columns: 1fr; }
-  .sheet { margin: auto 0 0; width: 100%; height: auto; max-height: 90vh; max-height: 90dvh; }
   .sheet-body {
+    top: auto; left: 0; width: 100%;
     max-height: 90vh; max-height: 90dvh; border-left: 0; border-top: 1px solid var(--line);
     border-radius: var(--r-sheet) var(--r-sheet) 0 0; transform: translateY(100%);
     padding: 1.6rem max(1.25rem, env(safe-area-inset-right, 0px)) max(2rem, env(safe-area-inset-bottom, 0px)) max(1.25rem, env(safe-area-inset-left, 0px));
@@ -476,6 +470,6 @@ dialog.in::backdrop { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after, dialog::backdrop { animation: none !important; transition: none !important; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
   @view-transition { navigation: none; }
 }

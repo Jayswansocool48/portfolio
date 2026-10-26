@@ -5,6 +5,7 @@
   const ASSETS = visible(window.ASSETS).map(a => ({ ...a, kind: "asset" }));
   const ITEMS = [...GAMES, ...ASSETS];
   const CATS = window.CATEGORIES || {};
+  const { spring, stop } = window.Motion;
   const page = document.body.dataset.page;
   const $ = s => document.querySelector(s);
   const $$ = s => [...document.querySelectorAll(s)];
@@ -29,14 +30,23 @@
   const lock = () => lenis && lenis.stop();
   const unlock = () => { if (lenis && !document.querySelector("dialog[open]")) lenis.start(); };
 
-  // ---- Reveal sections as you reach them ---------------------------------
+  // ---- Sections spring in as you reach them -------------------------------
+  const showNow = el => { el.classList.add("shown"); el.style.opacity = ""; el.style.transform = ""; };
   if (!reduced && "IntersectionObserver" in window) {
+    let n = 0;
     const io = new IntersectionObserver(es => es.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add("shown"); io.unobserve(e.target); }
+      if (!e.isIntersecting) return;
+      io.unobserve(e.target);
+      const el = e.target;
+      spring("reveal-" + n++, {
+        from: 0, to: 1, preset: "gentle",
+        onUpdate: p => { el.style.opacity = Math.min(1, p); el.style.transform = `translateY(${(1 - p) * 24}px)`; },
+        onDone: () => showNow(el),
+      });
     }), { rootMargin: "0px 0px -8% 0px" });
     $$(".reveal").forEach(el => io.observe(el));
   } else {
-    $$(".reveal").forEach(el => el.classList.add("shown"));
+    $$(".reveal").forEach(showNow);
   }
 
   // ---- Theme ------------------------------------------------------------
@@ -58,11 +68,15 @@
   // ---- Toast --------------------------------------------------------------
   const toast = $("#toast");
   let toastTimer;
+  const setToast = p => {
+    toast.style.opacity = Math.max(0, Math.min(1, p));
+    toast.style.transform = `translate(-50%, ${(1 - p) * 16}px)`;
+  };
   function say(msg) {
     toast.textContent = msg;
-    toast.classList.add("on");
+    spring("toast", { from: 0, to: 1, preset: "snappy", onUpdate: setToast });
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove("on"), 2000);
+    toastTimer = setTimeout(() => spring("toast", { from: 1, to: 0, preset: "snappy", onUpdate: setToast }), 2000);
   }
 
   // ---- Socials and contact details ----------------------------------------
@@ -87,7 +101,7 @@
     }
   }));
 
-  // ---- Cover art: a dithered lantern glow in each project's color ---------
+  // ---- Cover art: a dithered room lit by a doorway, in each project's color --
   const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
   const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
   function hash(s) { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; }
@@ -95,22 +109,38 @@
     const W = 200, H = 125, ctx = canvas.getContext("2d");
     canvas.width = W; canvas.height = H;
     const t = hex(item.tint || "#e5a24c"), base = [12, 14, 15];
-    const ramp = [0, .18, .38, .62, .9].map(k => base.map((b, i) => Math.round(b + (t[i] - b) * k)));
+    const ramp = [0, .16, .34, .58, .9].map(k => base.map((b, i) => Math.round(b + (t[i] - b) * k)));
     const h = hash(item.id);
-    const cx = 40 + (h % 120), cy = 26 + ((h >> 8) % 40), floor = 78 + ((h >> 16) % 18);
+    // Back wall rectangle and a doorway in it; the vanishing point sits at the doorway.
+    const bw = 64 + (h % 28), bh = 40 + ((h >>> 5) % 16);
+    const bx = 30 + ((h >>> 9) % (W - bw - 60)), by = 24 + ((h >>> 14) % 18);
+    const dw = 12 + ((h >>> 18) % 8), dh = Math.round(bh * .72);
+    const dx = bx + 8 + ((h >>> 21) % Math.max(1, bw - dw - 16)), dy = by + bh - dh;
+    const lx = dx + dw / 2, ly = by + bh;
     const img = ctx.createImageData(W, H), d = img.data;
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-      let v = Math.max(0, 1 - Math.hypot((x - cx) * .8, y - cy) / 95);
-      if (y > floor) v = v * .55 + Math.max(0, .25 - Math.abs(x - cx) / 300) * (1 - (y - floor) / (H - floor));
+      let v;
+      const onBack = x >= bx && x < bx + bw && y >= by && y < by + bh;
+      if (onBack) v = (x >= dx && x < dx + dw && y >= dy) ? 1 : .2;
+      else if (y >= by + bh) {
+        // Floor: light spills out of the doorway and fades toward you.
+        const spread = (y - ly) * 1.1 + dw / 2;
+        const inBeam = Math.abs(x - lx) < spread;
+        v = .12 + (inBeam ? .62 * (1 - (y - ly) / (H - ly)) * (1 - Math.abs(x - lx) / spread * .6) : 0);
+      } else if (y < by) v = .05;
+      else v = .14;
       const level = Math.min(.999, v) * (ramp.length - 1), lo = Math.floor(level);
       const c = ramp[(level - lo) * 16 > bayer[(y & 3) * 4 + (x & 3)] ? lo + 1 : lo];
       const i = (y * W + x) * 4; d[i] = c[0]; d[i + 1] = c[1]; d[i + 2] = c[2]; d[i + 3] = 255;
     }
     ctx.putImageData(img, 0, 0);
   }
+  window.fadeIn = img => spring("img-" + img.src, { from: 0, to: 1, preset: "gentle", onUpdate: v => { img.style.opacity = v; } });
+  const imgTag = (im, fallbackTint) =>
+    `<img src="${esc(im.src)}" alt="${esc(im.alt)}" loading="lazy" decoding="async" onload="fadeIn(this)">`;
   const coverHTML = item => item.images && item.images[0]
-    ? `<div class="cover" style="--tint:${esc(item.images[0].tint || item.tint)}"><img src="${esc(item.images[0].src)}" alt="${esc(item.images[0].alt)}" loading="lazy" decoding="async" onload="this.classList.add('loaded')"></div>`
-    : `<div class="cover"><canvas data-cover="${esc(item.id)}" aria-hidden="true"></canvas></div>`;
+    ? `<div class="cover" style="--tint:${esc(item.images[0].tint || item.tint)}">${imgTag(item.images[0])}</div>`
+    : `<div class="cover"><canvas data-cover="${esc(item.id)}" role="img" aria-label="Cover art for ${esc(item.name)}"></canvas></div>`;
   function paintCovers(root = document) {
     root.querySelectorAll("canvas[data-cover]").forEach(c => {
       const item = ITEMS.find(i => i.id === c.dataset.cover);
@@ -168,11 +198,21 @@
     const slides = [...track.children], dots = $("#dots");
     dots.innerHTML = slides.map((s, i) => `<button type="button" role="tab" aria-label="Show ${esc(s.querySelector(".slide-title").textContent)}" aria-selected="${i === 0}"></button>`).join("");
     if (slides.length < 2) { $(".car-ctrl").hidden = true; dots.hidden = true; }
+    const current = () => Math.round(track.scrollLeft / track.clientWidth);
     const go = i => {
       const n = (i + slides.length) % slides.length;
-      track.scrollTo({ left: slides[n].offsetLeft - track.offsetLeft, behavior: reduced ? "auto" : "smooth" });
+      const target = slides[n].offsetLeft - track.offsetLeft;
+      track.style.scrollSnapType = "none";
+      spring("carousel", {
+        from: track.scrollLeft, to: target, preset: "sheet",
+        onUpdate: v => { track.scrollLeft = v; },
+        onDone: () => { track.style.scrollSnapType = ""; },
+      });
     };
-    const current = () => Math.round(track.scrollLeft / track.clientWidth);
+    // Grab the track mid-glide and your finger wins.
+    const release = () => { stop("carousel"); track.style.scrollSnapType = ""; };
+    track.addEventListener("pointerdown", release);
+    track.addEventListener("wheel", release, { passive: true });
     track.addEventListener("scroll", () => {
       const i = current();
       [...dots.children].forEach((d, j) => d.setAttribute("aria-selected", String(i === j)));
@@ -181,7 +221,7 @@
     $$(".car-btn").forEach(b => b.addEventListener("click", () => go(current() + +b.dataset.dir)));
   }
 
-  // ---- Games page --------------------------------------------------------
+  // ---- Filter chips -------------------------------------------------------
   function chips(el, options, active, onPick) {
     el.innerHTML = options.map(([k, label, n]) =>
       `<button type="button" role="tab" data-k="${esc(k)}" aria-selected="${k === active}"${n === 0 ? " disabled" : ""}>${esc(label)} <b class="num">${n}</b></button>`).join("");
@@ -194,6 +234,8 @@
       next.focus(); next.click();
     };
   }
+
+  // ---- Games page --------------------------------------------------------
   if (page === "games") {
     const tags = [...new Set(GAMES.flatMap(g => g.tags || []))];
     let genre = "all";
@@ -240,8 +282,7 @@
 
   // ---- Contact form: opens the visitor's own email app --------------------
   if (page === "contact") {
-    const form = $("#mail-form");
-    form.addEventListener("submit", e => {
+    $("#mail-form").addEventListener("submit", e => {
       e.preventDefault();
       const msg = $("#f-msg"), ok = $("#f-ok");
       const noMsg = !msg.value.trim(), noOk = !ok.checked;
@@ -256,15 +297,79 @@
     });
   }
 
-  // ---- Mobile menu --------------------------------------------------------
-  const menu = $("#menu");
-  $(".menu-open").addEventListener("click", () => { menu.showModal(); lock(); requestAnimationFrame(() => menu.classList.add("in")); });
-  menu.addEventListener("click", e => { if (e.target === menu) menu.close(); });
-  menu.addEventListener("close", () => { menu.classList.remove("in"); unlock(); });
+  // ---- Panels that slide from an edge (project sheet, phone menu) ---------
+  // Each one is a spring on its offset in pixels. A drag hands its release
+  // velocity to the spring, so a flick keeps going and a slow drag settles back.
+  function slidePanel(dialog, panel, key, axisFor) {
+    const scrim = dialog.querySelector(".scrim");
+    let pos = 0, onClosed = null;
+    const axis = () => axisFor();
+    const size = () => (axis() === "y" ? panel.offsetHeight : panel.offsetWidth) || 1;
+    const set = v => {
+      pos = v;
+      panel.style.transform = axis() === "y" ? `translateY(${v}px)` : `translateX(${v}px)`;
+      scrim.style.opacity = String(Math.max(0, Math.min(1, 1 - v / size())));
+    };
+    function open() {
+      if (!dialog.open) { dialog.showModal(); set(size()); }
+      lock();
+      spring(key, { from: pos, to: 0, onUpdate: set });
+    }
+    function close(velocity = 0, done) {
+      if (!dialog.open) return;
+      onClosed = done;
+      spring(key, {
+        from: pos, to: size(), velocity, onUpdate: set,
+        onDone: () => { dialog.close(); panel.style.transform = ""; unlock(); onClosed && onClosed(); },
+      });
+    }
+    // Drag
+    let drag = null;
+    panel.addEventListener("pointerdown", e => {
+      if (e.button !== 0 || e.target.closest("a, button, img, input, select, textarea")) return;
+      if (axis() === "y" && panel.scrollTop > 0) return;
+      drag = { x: e.clientX, y: e.clientY, start: pos, id: e.pointerId, live: false, samples: [] };
+    });
+    panel.addEventListener("pointermove", e => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const d = axis() === "y" ? e.clientY - drag.y : e.clientX - drag.x;
+      const cross = axis() === "y" ? Math.abs(e.clientX - drag.x) : Math.abs(e.clientY - drag.y);
+      if (!drag.live) {
+        if (d > 8 && d > cross) { drag.live = true; stop(key); panel.setPointerCapture(e.pointerId); }
+        else if (cross > 8) { drag = null; return; }
+        else return;
+      }
+      const v = Math.max(0, drag.start + d);
+      set(v);
+      drag.samples.push([performance.now(), v]);
+      if (drag.samples.length > 5) drag.samples.shift();
+    });
+    const end = () => {
+      if (!drag) return;
+      const s = drag.samples, live = drag.live;
+      drag = null;
+      if (!live) return;
+      const vel = s.length > 1 ? (s[s.length - 1][1] - s[0][1]) / ((s[s.length - 1][0] - s[0][0]) / 1000 || 1) : 0;
+      if (pos > size() * 0.35 || vel > 700) panel.dispatchEvent(new CustomEvent("flick", { detail: vel }));
+      else spring(key, { from: pos, to: 0, velocity: vel, onUpdate: set });
+    };
+    panel.addEventListener("pointerup", end);
+    panel.addEventListener("pointercancel", end);
+    return { open, close };
+  }
 
-  // ---- Detail sheet ------------------------------------------------------
+  // Phone menu
+  const menu = $("#menu");
+  const menuPanel = slidePanel(menu, menu.querySelector(".menu-body"), "menu", () => "x");
+  $(".menu-open").addEventListener("click", () => menuPanel.open());
+  menu.querySelector(".scrim").addEventListener("click", () => menuPanel.close());
+  menu.addEventListener("cancel", e => { e.preventDefault(); menuPanel.close(); });
+  menu.querySelector(".menu-body").addEventListener("flick", e => menuPanel.close(e.detail));
+
+  // Project sheet
   const sheet = $("#sheet"), body = sheet.querySelector(".sheet-body");
-  let opener = null;
+  const sheetPanel = slidePanel(sheet, body, "sheet", () => matchMedia("(max-width: 700px)").matches ? "y" : "x");
+  let opener = null, pendingVelocity = 0;
 
   function fill(p) {
     $("#sheet-cover").innerHTML = coverHTML(p);
@@ -276,8 +381,8 @@
     $("#sheet-about").innerHTML = (p.about || [p.summary]).map(t => `<p>${esc(t)}</p>`).join("");
     const more = (p.images || []).slice(1);
     $("#sheet-media").innerHTML = more.length
-      ? more.map(im => `<div class="shot" style="--tint:${esc(im.tint || p.tint)}"><img src="${esc(im.src)}" alt="${esc(im.alt)}" loading="lazy" decoding="async" onload="this.classList.add('loaded')"></div>`).join("")
-      : `<p class="media-note">Screenshots go up as soon as there&rsquo;s something to show.</p>`;
+      ? more.map(im => `<div class="shot" style="--tint:${esc(im.tint || p.tint)}">${imgTag(im)}</div>`).join("")
+      : `<p class="media-note">I&rsquo;ll post screenshots here as soon as there&rsquo;s something to show.</p>`;
     const links = [...(p.buy ? [p.buy] : []), ...(p.links || [])];
     $("#sheet-links").innerHTML = links.map((l, i) => `<a class="${i === 0 && p.buy ? "btn" : "btn ghost"}" href="${esc(l.href)}" rel="noopener">${esc(l.label)}</a>`).join("");
   }
@@ -285,20 +390,11 @@
     if (!sheet.open) opener = document.activeElement;
     fill(p);
     body.scrollTop = 0;
-    if (!sheet.open) sheet.showModal();
-    lock();
-    requestAnimationFrame(() => sheet.classList.add("in"));
+    sheetPanel.open();
   }
   function closeSheet() {
-    if (!sheet.open) return;
-    sheet.classList.remove("in");
-    body.style.transform = "";
-    const finish = () => {
-      if (sheet.classList.contains("in")) return;
-      sheet.close(); unlock();
-      if (opener && opener.focus) opener.focus({ preventScroll: true });
-    };
-    reduced ? finish() : body.addEventListener("transitionend", finish, { once: true });
+    const v = pendingVelocity; pendingVelocity = 0;
+    sheetPanel.close(v, () => { if (opener && opener.focus) opener.focus({ preventScroll: true }); });
   }
   const isItemHash = () => ITEMS.some(x => "#" + x.id === location.hash);
   function route() {
@@ -308,42 +404,18 @@
   const dismiss = () => isItemHash() ? history.back() : closeSheet();
   addEventListener("hashchange", route);
   sheet.addEventListener("cancel", e => { e.preventDefault(); dismiss(); });
-  sheet.addEventListener("click", e => { if (e.target === sheet) dismiss(); });
+  sheet.querySelector(".scrim").addEventListener("click", dismiss);
   sheet.querySelector(".close").addEventListener("click", dismiss);
-
-  // Drag to dismiss: down on phones, right on desktop. Let go early and it springs back.
-  let drag = null;
-  body.addEventListener("pointerdown", e => {
-    if (e.button !== 0 || e.target.closest("a, button, img")) return;
-    const phone = matchMedia("(max-width: 700px)").matches;
-    if (phone && body.scrollTop > 0) return;
-    drag = { phone, x: e.clientX, y: e.clientY, d: 0, id: e.pointerId, live: false };
-  });
-  body.addEventListener("pointermove", e => {
-    if (!drag || e.pointerId !== drag.id) return;
-    const d = drag.phone ? e.clientY - drag.y : e.clientX - drag.x;
-    const cross = drag.phone ? Math.abs(e.clientX - drag.x) : Math.abs(e.clientY - drag.y);
-    if (!drag.live) {
-      if (d > 8 && d > cross) { drag.live = true; sheet.classList.add("dragging"); body.setPointerCapture(e.pointerId); }
-      else if (cross > 8) { drag = null; return; }
-      else return;
-    }
-    drag.d = Math.max(0, d);
-    body.style.transform = drag.phone ? `translateY(${drag.d}px)` : `translateX(${drag.d}px)`;
-  });
-  const endDrag = () => {
-    if (!drag) return;
-    const far = drag.live && drag.d > (drag.phone ? body.offsetHeight : body.offsetWidth) * 0.25;
-    sheet.classList.remove("dragging");
-    body.style.transform = "";
-    drag = null;
-    if (far) dismiss();
-  };
-  body.addEventListener("pointerup", endDrag);
-  body.addEventListener("pointercancel", endDrag);
+  body.addEventListener("flick", e => { pendingVelocity = e.detail; dismiss(); });
 
   // ---- Command menu (Ctrl+K) ---------------------------------------------
   const cmdk = $("#cmdk"), input = $("#cmdk-input"), listEl = $("#cmdk-list");
+  const box = cmdk.querySelector(".cmdk-box"), cmdScrim = cmdk.querySelector(".scrim");
+  const setCmd = p => {
+    const c = Math.max(0, Math.min(1, p));
+    box.style.opacity = c; cmdScrim.style.opacity = c;
+    box.style.transform = `translateY(${(1 - p) * -12}px) scale(${0.97 + 0.03 * p})`;
+  };
   const actions = [
     ...ITEMS.map(p => ({ label: p.name, hint: p.kind === "asset" ? "Store" : "Game", terms: (p.tags || []).join(" ") + " " + p.summary, run: () => { location.hash = p.id; } })),
     ...[["Home", "index.html"], ["Games", "games.html"], ["Store", "store.html"], ["About", "about.html"], ["Contact", "contact.html"], ["Refund policy", "refunds.html"], ["Privacy", "privacy.html"], ["Terms", "terms.html"]]
@@ -363,18 +435,25 @@
     const cur = listEl.querySelector('[aria-selected="true"]');
     if (cur) cur.scrollIntoView({ block: "nearest" });
   }
+  let cmdP = 0;
   function openCmd() {
-    if (cmdk.open) return;
     if (sheet.open) dismiss();
-    if (menu.open) menu.close();
-    input.value = ""; sel = 0; renderCmd();
-    cmdk.showModal(); input.focus(); lock();
-    requestAnimationFrame(() => cmdk.classList.add("in"));
+    if (menu.open) menuPanel.close();
+    if (!cmdk.open) { input.value = ""; sel = 0; renderCmd(); cmdk.showModal(); setCmd(0); }
+    input.focus(); lock();
+    spring("cmdk", { from: cmdP, to: 1, preset: "snappy", onUpdate: p => { cmdP = p; setCmd(p); } });
   }
-  const closeCmd = () => cmdk.close();
+  function closeCmd(after) {
+    if (!cmdk.open) return;
+    spring("cmdk", {
+      from: cmdP, to: 0, preset: "snappy", onUpdate: p => { cmdP = p; setCmd(p); },
+      onDone: () => { cmdk.close(); unlock(); after && after(); },
+    });
+  }
   function runSel(i) { const a = matches[i]; if (!a) return; closeCmd(); a.run(); }
   $(".cmd-open").addEventListener("click", openCmd);
-  cmdk.addEventListener("close", () => { cmdk.classList.remove("in"); unlock(); });
+  cmdk.addEventListener("cancel", e => { e.preventDefault(); closeCmd(); });
+  cmdScrim.addEventListener("click", () => closeCmd());
   input.addEventListener("input", () => { sel = 0; renderCmd(); });
   input.addEventListener("keydown", e => {
     if (e.key === "ArrowDown") { e.preventDefault(); sel = (sel + 1) % Math.max(1, matches.length); renderCmd(); }
@@ -382,9 +461,8 @@
     else if (e.key === "Enter") { e.preventDefault(); runSel(sel); }
   });
   listEl.addEventListener("click", e => { const li = e.target.closest("[data-i]"); if (li) runSel(+li.dataset.i); });
-  cmdk.addEventListener("click", e => { if (e.target === cmdk) closeCmd(); });
   addEventListener("keydown", e => {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); cmdk.open ? closeCmd() : openCmd(); }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); cmdk.open && cmdP > 0.5 ? closeCmd() : openCmd(); }
   });
   if (/Mac|iPhone|iPad/.test(navigator.platform)) $$(".cmd-open kbd").forEach(k => { k.textContent = "⌘ K"; });
 
