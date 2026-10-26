@@ -1,17 +1,23 @@
 (function () {
-  const projects = (window.PROJECTS || []).filter(p => p.show !== false);
-  const KINDS = window.KINDS;
-  const STUDIO = window.STUDIO || {};
+  const S = window.STUDIO || {};
+  const visible = list => (list || []).filter(x => x.show !== false);
+  const GAMES = visible(window.GAMES).map(g => ({ ...g, kind: "game" }));
+  const ASSETS = visible(window.ASSETS).map(a => ({ ...a, kind: "asset" }));
+  const ITEMS = [...GAMES, ...ASSETS];
+  const CATS = window.CATEGORIES || {};
+  const page = document.body.dataset.page;
   const $ = s => document.querySelector(s);
-  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const $$ = s => [...document.querySelectorAll(s)];
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
   };
   const transition = fn => (document.startViewTransition && !reduced) ? document.startViewTransition(fn) : fn();
+  const priceNum = p => p.price ? parseFloat(String(p.price).replace(/[^0-9.]/g, "")) : Infinity;
 
-  $("#year").textContent = new Date().getFullYear();
+  $$("[data-year]").forEach(el => { el.textContent = new Date().getFullYear(); });
 
   // ---- Smooth scrolling ---------------------------------------------------
   let lenis = null;
@@ -20,29 +26,17 @@
     const raf = t => { lenis.raf(t); requestAnimationFrame(raf); };
     requestAnimationFrame(raf);
   }
-  const goTo = target => {
-    const el = typeof target === "string" ? $(target) : target;
-    if (!el) return;
-    lenis ? lenis.scrollTo(el, { offset: -72, duration: 1.1 }) : el.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
-  };
-  document.addEventListener("click", e => {
-    const a = e.target.closest('a[href^="#"]');
-    if (!a) return;
-    const id = a.getAttribute("href").slice(1);
-    if (projects.some(p => p.id === id)) return;     // project links open a sheet instead
-    e.preventDefault();
-    goTo(id ? "#" + id : document.body);
-    history.replaceState(null, "", location.pathname + location.search);
-  });
+  const lock = () => lenis && lenis.stop();
+  const unlock = () => { if (lenis && !document.querySelector("dialog[open]")) lenis.start(); };
 
-  // ---- Sections ease in once as you reach them ----------------------------
+  // ---- Reveal sections as you reach them ---------------------------------
   if (!reduced && "IntersectionObserver" in window) {
-    const io = new IntersectionObserver(entries => entries.forEach(en => {
-      if (en.isIntersecting) { en.target.classList.add("shown"); io.unobserve(en.target); }
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("shown"); io.unobserve(e.target); }
     }), { rootMargin: "0px 0px -8% 0px" });
-    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+    $$(".reveal").forEach(el => io.observe(el));
   } else {
-    document.querySelectorAll(".reveal").forEach(el => el.classList.add("shown"));
+    $$(".reveal").forEach(el => el.classList.add("shown"));
   }
 
   // ---- Theme ------------------------------------------------------------
@@ -61,82 +55,238 @@
   }
   themeBtn.addEventListener("click", toggleTheme);
 
-  // ---- Lists --------------------------------------------------------------
-  const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
-  function renderList(kind, listId, countId, word, empty) {
-    const list = projects.filter(p => p.kind === kind);
-    $(countId).textContent = plural(list.length, word);
-    const el = $(listId);
-    if (!list.length) { el.innerHTML = `<li class="empty">${empty}</li>`; return; }
-    el.innerHTML = list.map(p => `
-      <li class="row">
-        <button type="button" data-id="${esc(p.id)}" aria-haspopup="dialog">
-          <span class="r-name">${esc(p.name)}</span>
-          <span class="r-sum">${esc(p.summary)}</span>
-          <span class="r-tags">${(p.tags || []).map(esc).join(" · ")}</span>
-          <span class="chip${/development|building/i.test(p.status) ? " live" : ""}">${esc(p.price || p.status)}</span>
-        </button>
-      </li>`).join("");
-  }
-  renderList("game", "#games-list", "#games-count", "game", "<strong>No games listed.</strong>");
-  renderList("asset", "#assets-list", "#assets-count", "pack", "<strong>No asset packs yet.</strong>Check back soon.");
-  document.querySelectorAll(".index").forEach(ul => ul.addEventListener("click", e => {
-    const b = e.target.closest("button[data-id]");
-    if (b) location.hash = b.dataset.id;
-  }));
-
-  // ---- Contact -----------------------------------------------------------
+  // ---- Toast --------------------------------------------------------------
   const toast = $("#toast");
   let toastTimer;
   function say(msg) {
     toast.textContent = msg;
     toast.classList.add("on");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove("on"), 1800);
+    toastTimer = setTimeout(() => toast.classList.remove("on"), 2000);
   }
-  if (STUDIO.email) { const a = $("#email-link"); a.href = "mailto:" + STUDIO.email; a.textContent = STUDIO.email; }
-  if (STUDIO.discord) $("#discord-value").textContent = STUDIO.discord;
-  document.querySelectorAll(".copy").forEach(btn => btn.addEventListener("click", async () => {
-    const value = STUDIO[btn.dataset.copy];
+
+  // ---- Socials and contact details ----------------------------------------
+  const SOCIAL_NAMES = { itch: "itch.io", youtube: "YouTube", github: "GitHub", steam: "Steam", twitter: "X (Twitter)", instagram: "Instagram" };
+  const socials = Object.entries(S.socials || {}).filter(([, url]) => url);
+  if (socials.length) {
+    $$("[data-socials]").forEach(box => {
+      box.innerHTML = socials.map(([k, url]) => `<a href="${esc(url)}" rel="noopener me">${esc(SOCIAL_NAMES[k] || k)}</a>`).join("");
+      box.parentElement.hidden = false;
+    });
+  }
+  $$("[data-email]").forEach(a => { a.href = "mailto:" + S.email; a.textContent = S.email; });
+  $$("[data-discord]").forEach(el => { el.textContent = S.discord; });
+  $$(".copy").forEach(btn => btn.addEventListener("click", async () => {
+    const value = S[btn.dataset.copy];
     try { await navigator.clipboard.writeText(value); say("Copied " + value); }
     catch (e) {
-      const node = btn.previousElementSibling, range = document.createRange();
-      range.selectNodeContents(node);
+      const range = document.createRange();
+      range.selectNodeContents(btn.previousElementSibling);
       const sel = getSelection(); sel.removeAllRanges(); sel.addRange(range);
       say("Selected. Press Ctrl+C to copy");
     }
   }));
+
+  // ---- Cover art: a dithered lantern glow in each project's color ---------
+  const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+  const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  function hash(s) { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; }
+  function drawCover(canvas, item) {
+    const W = 200, H = 125, ctx = canvas.getContext("2d");
+    canvas.width = W; canvas.height = H;
+    const t = hex(item.tint || "#e5a24c"), base = [12, 14, 15];
+    const ramp = [0, .18, .38, .62, .9].map(k => base.map((b, i) => Math.round(b + (t[i] - b) * k)));
+    const h = hash(item.id);
+    const cx = 40 + (h % 120), cy = 26 + ((h >> 8) % 40), floor = 78 + ((h >> 16) % 18);
+    const img = ctx.createImageData(W, H), d = img.data;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      let v = Math.max(0, 1 - Math.hypot((x - cx) * .8, y - cy) / 95);
+      if (y > floor) v = v * .55 + Math.max(0, .25 - Math.abs(x - cx) / 300) * (1 - (y - floor) / (H - floor));
+      const level = Math.min(.999, v) * (ramp.length - 1), lo = Math.floor(level);
+      const c = ramp[(level - lo) * 16 > bayer[(y & 3) * 4 + (x & 3)] ? lo + 1 : lo];
+      const i = (y * W + x) * 4; d[i] = c[0]; d[i + 1] = c[1]; d[i + 2] = c[2]; d[i + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+  const coverHTML = item => item.images && item.images[0]
+    ? `<div class="cover" style="--tint:${esc(item.images[0].tint || item.tint)}"><img src="${esc(item.images[0].src)}" alt="${esc(item.images[0].alt)}" loading="lazy" decoding="async" onload="this.classList.add('loaded')"></div>`
+    : `<div class="cover"><canvas data-cover="${esc(item.id)}" aria-hidden="true"></canvas></div>`;
+  function paintCovers(root = document) {
+    root.querySelectorAll("canvas[data-cover]").forEach(c => {
+      const item = ITEMS.find(i => i.id === c.dataset.cover);
+      if (item) drawCover(c, item);
+    });
+  }
+
+  // ---- Cards -------------------------------------------------------------
+  const live = s => /development|building/i.test(s);
+  function card(item) {
+    const meta = item.kind === "asset" ? `${CATS[item.category] || ""} · ${item.engine || ""}` : (item.tags || []).slice(0, 2).join(" · ");
+    const right = item.kind === "asset" && item.price && item.buy
+      ? `<span class="price num">${esc(item.price)}</span><a class="btn small" href="${esc(item.buy.href)}" rel="noopener">${esc(item.buy.label)}</a>`
+      : `<span class="chip${live(item.status) ? " live" : ""}">${esc(item.status)}</span>`;
+    return `<article class="card" style="view-transition-name: card-${esc(item.id)}">
+      <button class="card-main" type="button" data-id="${esc(item.id)}" aria-haspopup="dialog">
+        ${coverHTML(item)}
+        <span class="card-text">
+          <span class="card-meta">${esc(meta)}</span>
+          <span class="card-title">${esc(item.name)}</span>
+          <span class="card-sum">${esc(item.summary)}</span>
+        </span>
+      </button>
+      <div class="card-foot">${right}</div>
+    </article>`;
+  }
+  function renderCards(el, list, empty) {
+    el.innerHTML = list.length ? list.map(card).join("") : `<div class="empty">${empty}</div>`;
+    paintCovers(el);
+  }
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-id]");
+    if (b && b.closest(".cards")) location.hash = b.dataset.id;
+  });
+
+  // ---- Home ---------------------------------------------------------------
+  if (page === "home") {
+    renderCards($("#home-games"), GAMES.filter(g => g.featured).slice(0, 4), "No games yet.");
+    renderCards($("#home-assets"), ASSETS.filter(a => a.featured).slice(0, 2), "Nothing in the store yet.");
+
+    const track = $("#carousel");
+    GAMES.filter(g => g.current && g.id !== "after-hours").forEach(g => {
+      track.insertAdjacentHTML("beforeend", `
+        <article class="slide" aria-roledescription="slide" aria-labelledby="slide-${esc(g.id)}">
+          <div class="slide-art">${coverHTML(g)}</div>
+          <div class="slide-copy">
+            <p class="meta">${esc((g.tags || [])[0] || "Game")} &middot; ${esc(g.status)}</p>
+            <h3 class="slide-title" id="slide-${esc(g.id)}">${esc(g.name)}</h3>
+            <p>${esc((g.about || [g.summary])[0])}</p>
+            <a class="btn" href="#${esc(g.id)}">Read more</a>
+          </div>
+        </article>`);
+    });
+    paintCovers(track);
+    const slides = [...track.children], dots = $("#dots");
+    dots.innerHTML = slides.map((s, i) => `<button type="button" role="tab" aria-label="Show ${esc(s.querySelector(".slide-title").textContent)}" aria-selected="${i === 0}"></button>`).join("");
+    if (slides.length < 2) { $(".car-ctrl").hidden = true; dots.hidden = true; }
+    const go = i => {
+      const n = (i + slides.length) % slides.length;
+      track.scrollTo({ left: slides[n].offsetLeft - track.offsetLeft, behavior: reduced ? "auto" : "smooth" });
+    };
+    const current = () => Math.round(track.scrollLeft / track.clientWidth);
+    track.addEventListener("scroll", () => {
+      const i = current();
+      [...dots.children].forEach((d, j) => d.setAttribute("aria-selected", String(i === j)));
+    }, { passive: true });
+    dots.addEventListener("click", e => { const b = e.target.closest("button"); if (b) go([...dots.children].indexOf(b)); });
+    $$(".car-btn").forEach(b => b.addEventListener("click", () => go(current() + +b.dataset.dir)));
+  }
+
+  // ---- Games page --------------------------------------------------------
+  function chips(el, options, active, onPick) {
+    el.innerHTML = options.map(([k, label, n]) =>
+      `<button type="button" role="tab" data-k="${esc(k)}" aria-selected="${k === active}"${n === 0 ? " disabled" : ""}>${esc(label)} <b class="num">${n}</b></button>`).join("");
+    el.onclick = e => { const b = e.target.closest("button"); if (b && !b.disabled) onPick(b.dataset.k); };
+    el.onkeydown = e => {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      const btns = [...el.querySelectorAll("button:not([disabled])")];
+      const i = btns.indexOf(document.activeElement);
+      const next = btns[(i + (e.key === "ArrowRight" ? 1 : -1) + btns.length) % btns.length];
+      next.focus(); next.click();
+    };
+  }
+  if (page === "games") {
+    const tags = [...new Set(GAMES.flatMap(g => g.tags || []))];
+    let genre = "all";
+    const draw = () => {
+      chips($("#genre-filter"), [["all", "All", GAMES.length], ...tags.map(t => [t, t, GAMES.filter(g => g.tags.includes(t)).length])], genre,
+        k => { genre = k; transition(draw); });
+      const list = genre === "all" ? GAMES : GAMES.filter(g => g.tags.includes(genre));
+      $("#games-count").textContent = `${list.length} ${list.length === 1 ? "game" : "games"}`;
+      renderCards($("#games-grid"), list, "No games in this genre yet.");
+    };
+    draw();
+  }
+
+  // ---- Store page --------------------------------------------------------
+  if (page === "store") {
+    let cat = "all", sort = $("#sort").value;
+    const order = {
+      featured: (a, b) => (b.featured === true) - (a.featured === true),
+      newest: (a, b) => String(b.added).localeCompare(String(a.added)),
+      low: (a, b) => priceNum(a) - priceNum(b),
+      high: (a, b) => (priceNum(b) === Infinity ? -1 : priceNum(b)) - (priceNum(a) === Infinity ? -1 : priceNum(a)),
+    };
+    const draw = () => {
+      chips($("#cat-filter"), [["all", "All", ASSETS.length], ...Object.entries(CATS).map(([k, l]) => [k, l, ASSETS.filter(a => a.category === k).length])], cat,
+        k => { cat = k; transition(draw); });
+      const list = (cat === "all" ? ASSETS : ASSETS.filter(a => a.category === cat)).slice().sort(order[sort]);
+      renderCards($("#store-grid"), list, "Nothing in this category yet.");
+    };
+    $("#sort").addEventListener("change", e => { sort = e.target.value; transition(draw); });
+    draw();
+  }
+
+  // ---- About page --------------------------------------------------------
+  if (page === "about") {
+    const years = new Date().getFullYear() - (S.since || 2020);
+    const stats = [
+      [years, years === 1 ? "year making games" : "years making games"],
+      [GAMES.length, GAMES.length === 1 ? "game in development" : "games in development"],
+      [ASSETS.length, ASSETS.length === 1 ? "asset pack in progress" : "asset packs in progress"],
+      [3, "engines I build in"],
+    ];
+    $("#stats").innerHTML = stats.map(([n, l]) => `<div><dt class="num">${n}</dt><dd>${l}</dd></div>`).join("");
+  }
+
+  // ---- Contact form: opens the visitor's own email app --------------------
+  if (page === "contact") {
+    const form = $("#mail-form");
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const msg = $("#f-msg"), ok = $("#f-ok");
+      const noMsg = !msg.value.trim(), noOk = !ok.checked;
+      $("#f-msg-err").hidden = !noMsg; msg.setAttribute("aria-invalid", String(noMsg));
+      $("#f-ok-err").hidden = !noOk; ok.setAttribute("aria-invalid", String(noOk));
+      if (noMsg) return msg.focus();
+      if (noOk) return ok.focus();
+      const name = $("#f-name").value.trim();
+      const subject = `${$("#f-topic").value}${name ? " from " + name : ""}`;
+      location.href = `mailto:${S.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(msg.value.trim() + (name ? "\n\n" + name : ""))}`;
+      say("Opening your email app");
+    });
+  }
+
+  // ---- Mobile menu --------------------------------------------------------
+  const menu = $("#menu");
+  $(".menu-open").addEventListener("click", () => { menu.showModal(); lock(); requestAnimationFrame(() => menu.classList.add("in")); });
+  menu.addEventListener("click", e => { if (e.target === menu) menu.close(); });
+  menu.addEventListener("close", () => { menu.classList.remove("in"); unlock(); });
 
   // ---- Detail sheet ------------------------------------------------------
   const sheet = $("#sheet"), body = sheet.querySelector(".sheet-body");
   let opener = null;
 
   function fill(p) {
-    $("#sheet-kind").textContent = KINDS[p.kind] || p.kind;
+    $("#sheet-cover").innerHTML = coverHTML(p);
+    paintCovers($("#sheet-cover"));
+    $("#sheet-kind").textContent = p.kind === "asset" ? (CATS[p.category] || "Asset") : "Game";
     $("#sheet-title").textContent = p.name;
-    $("#sheet-meta").textContent = [p.status, p.price].filter(Boolean).join(" · ");
+    $("#sheet-meta").textContent = [p.status, p.engine, p.price].filter(Boolean).join(" · ");
     $("#sheet-tags").innerHTML = (p.tags || []).map(t => `<li>${esc(t)}</li>`).join("");
     $("#sheet-about").innerHTML = (p.about || [p.summary]).map(t => `<p>${esc(t)}</p>`).join("");
-    const media = $("#sheet-media");
-    if (p.images && p.images.length) {
-      media.innerHTML = p.images.map(im =>
-        `<div class="shot" style="--tint:${esc(im.tint || "")}"><img src="${esc(im.src)}" alt="${esc(im.alt || "")}" loading="lazy" decoding="async"></div>`).join("");
-      media.querySelectorAll("img").forEach(img => {
-        const done = () => img.classList.add("loaded");
-        img.complete ? done() : img.addEventListener("load", done, { once: true });
-      });
-    } else {
-      media.innerHTML = `<div class="shot skel-box" aria-hidden="true"></div><p class="media-note">Screenshots go up as soon as there&rsquo;s something to show.</p>`;
-    }
-    $("#sheet-links").innerHTML = (p.links || []).map(l => `<a href="${esc(l.href)}" rel="noopener">${esc(l.label)}</a>`).join("");
+    const more = (p.images || []).slice(1);
+    $("#sheet-media").innerHTML = more.length
+      ? more.map(im => `<div class="shot" style="--tint:${esc(im.tint || p.tint)}"><img src="${esc(im.src)}" alt="${esc(im.alt)}" loading="lazy" decoding="async" onload="this.classList.add('loaded')"></div>`).join("")
+      : `<p class="media-note">Screenshots go up as soon as there&rsquo;s something to show.</p>`;
+    const links = [...(p.buy ? [p.buy] : []), ...(p.links || [])];
+    $("#sheet-links").innerHTML = links.map((l, i) => `<a class="${i === 0 && p.buy ? "btn" : "btn ghost"}" href="${esc(l.href)}" rel="noopener">${esc(l.label)}</a>`).join("");
   }
-
   function openSheet(p) {
     if (!sheet.open) opener = document.activeElement;
     fill(p);
     body.scrollTop = 0;
     if (!sheet.open) sheet.showModal();
-    lenis && lenis.stop();
+    lock();
     requestAnimationFrame(() => sheet.classList.add("in"));
   }
   function closeSheet() {
@@ -145,18 +295,17 @@
     body.style.transform = "";
     const finish = () => {
       if (sheet.classList.contains("in")) return;
-      sheet.close(); lenis && lenis.start();
+      sheet.close(); unlock();
       if (opener && opener.focus) opener.focus({ preventScroll: true });
     };
     reduced ? finish() : body.addEventListener("transitionend", finish, { once: true });
   }
+  const isItemHash = () => ITEMS.some(x => "#" + x.id === location.hash);
   function route() {
-    const p = projects.find(x => x.id === decodeURIComponent(location.hash.slice(1)));
+    const p = ITEMS.find(x => x.id === decodeURIComponent(location.hash.slice(1)));
     p ? openSheet(p) : closeSheet();
   }
-  function dismiss() {
-    projects.some(x => "#" + x.id === location.hash) ? history.back() : closeSheet();
-  }
+  const dismiss = () => isItemHash() ? history.back() : closeSheet();
   addEventListener("hashchange", route);
   sheet.addEventListener("cancel", e => { e.preventDefault(); dismiss(); });
   sheet.addEventListener("click", e => { if (e.target === sheet) dismiss(); });
@@ -196,16 +345,13 @@
   // ---- Command menu (Ctrl+K) ---------------------------------------------
   const cmdk = $("#cmdk"), input = $("#cmdk-input"), listEl = $("#cmdk-list");
   const actions = [
-    ...projects.map(p => ({ label: p.name, hint: KINDS[p.kind], terms: (p.tags || []).join(" ") + " " + p.summary, run: () => { location.hash = p.id; } })),
-    ...[["Games", "#games"], ["Assets", "#assets"], ["About", "#about"], ["Contact", "#contact"]]
-      .map(([label, sel]) => ({ label, hint: "Section", run: () => goTo(sel) })),
-    { label: "Copy email address", hint: "Contact", run: () => document.querySelector('[data-copy="email"]').click() },
+    ...ITEMS.map(p => ({ label: p.name, hint: p.kind === "asset" ? "Store" : "Game", terms: (p.tags || []).join(" ") + " " + p.summary, run: () => { location.hash = p.id; } })),
+    ...[["Home", "index.html"], ["Games", "games.html"], ["Store", "store.html"], ["About", "about.html"], ["Contact", "contact.html"], ["Refund policy", "refunds.html"], ["Privacy", "privacy.html"], ["Terms", "terms.html"]]
+      .map(([label, href]) => ({ label, hint: "Page", run: () => { location.href = href; } })),
+    { label: "Copy email address", hint: "Contact", run: async () => { try { await navigator.clipboard.writeText(S.email); say("Copied " + S.email); } catch (e) { say(S.email); } } },
     { label: "Toggle light and dark", hint: "Theme", run: toggleTheme },
-    { label: "Privacy", hint: "Page", run: () => { location.href = "privacy.html"; } },
-    { label: "Terms", hint: "Page", run: () => { location.href = "terms.html"; } },
   ];
   let matches = actions, sel = 0;
-
   function renderCmd() {
     const q = input.value.trim().toLowerCase();
     matches = q ? actions.filter(a => (a.label + " " + a.hint + " " + (a.terms || "")).toLowerCase().includes(q)) : actions;
@@ -220,16 +366,15 @@
   function openCmd() {
     if (cmdk.open) return;
     if (sheet.open) dismiss();
+    if (menu.open) menu.close();
     input.value = ""; sel = 0; renderCmd();
-    cmdk.showModal(); input.focus();
-    lenis && lenis.stop();
+    cmdk.showModal(); input.focus(); lock();
     requestAnimationFrame(() => cmdk.classList.add("in"));
   }
-  function closeCmd() { cmdk.classList.remove("in"); cmdk.close(); lenis && lenis.start(); }
+  const closeCmd = () => cmdk.close();
   function runSel(i) { const a = matches[i]; if (!a) return; closeCmd(); a.run(); }
-
   $(".cmd-open").addEventListener("click", openCmd);
-  cmdk.addEventListener("close", () => { cmdk.classList.remove("in"); lenis && lenis.start(); });
+  cmdk.addEventListener("close", () => { cmdk.classList.remove("in"); unlock(); });
   input.addEventListener("input", () => { sel = 0; renderCmd(); });
   input.addEventListener("keydown", e => {
     if (e.key === "ArrowDown") { e.preventDefault(); sel = (sel + 1) % Math.max(1, matches.length); renderCmd(); }
@@ -241,13 +386,7 @@
   addEventListener("keydown", e => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); cmdk.open ? closeCmd() : openCmd(); }
   });
-  if (/Mac|iPhone|iPad/.test(navigator.platform)) document.querySelectorAll(".cmd-open kbd").forEach(k => { k.textContent = "⌘ K"; });
-
-  // ---- Prefetch the policy pages when someone heads for them -------------
-  document.querySelectorAll('.foot a[href$=".html"]').forEach(a => a.addEventListener("pointerenter", () => {
-    const l = document.createElement("link"); l.rel = "prefetch"; l.href = a.getAttribute("href");
-    document.head.appendChild(l);
-  }, { once: true }));
+  if (/Mac|iPhone|iPad/.test(navigator.platform)) $$(".cmd-open kbd").forEach(k => { k.textContent = "⌘ K"; });
 
   route();
 })();

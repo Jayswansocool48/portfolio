@@ -2,11 +2,15 @@
 
 The Iron Lantern Studios website. Plain HTML, CSS and JavaScript with no build step.
 
+Pages: `index.html` (home), `games.html`, `store.html`, `about.html`, `contact.html`, plus `privacy.html`, `terms.html` and `refunds.html`. Each page carries its own copy of the header and footer, so change the nav in every page if you add one.
+
 ## Add or change a game or asset
 
-Edit `projects.js`. Each entry is a game or an asset. Set `show: false` to hide one. Put screenshots in a `media/` folder and list them under `images`. Add a `price` and a `links` entry when an asset goes on sale.
+Edit `projects.js`. `GAMES` and `ASSETS` hold every entry, and the comments above each list explain the fields. Set `show: false` to hide one. Put screenshots in a `media/` folder and list them under `images`; the first image becomes the cover.
 
-The email and Discord shown under Contact sit at the top of the same file.
+To put an asset on sale, add `price` and `buy: { label, href }` pointing at its itch.io, Fab or Roblox Creator Store page.
+
+Your email, Discord and social links sit in `STUDIO` at the top of the same file. Social links stay hidden until you fill them in.
 
 ## Preview
 

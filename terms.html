@@ -4,27 +4,117 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Terms | Iron Lantern Studios</title>
+<meta name="description" content="Terms for the Iron Lantern Studios site.">
 <meta name="robots" content="noindex, nofollow">
 <meta name="color-scheme" content="dark light">
+<link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3v3M10 8h12l-2 3H12z' stroke='%23e2a04a' stroke-width='2' fill='none'/%3E%3Cpath d='M11 12h10v13H11z' stroke='%23e2a04a' stroke-width='2' fill='none'/%3E%3Cpath d='M16 15c2 2 2 4 0 6-2-2-2-4 0-6z' fill='%23e2a04a'/%3E%3Cpath d='M9 27h14' stroke='%23e2a04a' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="vendor/lenis.css">
 <link rel="stylesheet" href="style.css">
-<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<script>
+  try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  document.documentElement.classList.add("js");
+</script>
+<script type="speculationrules">
+  {"prerender": [{"where": {"href_matches": "/*.html"}, "eagerness": "moderate"}]}
+</script>
 </head>
-<body>
-<header class="bar"><div class="wrap bar-inner">
-  <a class="brand" href="index.html"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path class="frame" d="M16 3v3M10 8h12l-2 3H12zM11 12h10v13H11zM9 27h14"/><path class="flame" d="M16 15c2.2 2 2.2 4.2 0 6.2-2.2-2-2.2-4.2 0-6.2z"/></svg><span class="brand-name">Iron Lantern<span> Studios</span></span></a>
-  <nav class="nav" aria-label="Pages"><a href="index.html">Back to work</a></nav>
-</div></header>
-<main class="wrap hero">
-<h1 style="font-size:clamp(2.2rem,6vw,4rem)">Terms</h1>
-<p class="meta">Last updated October 26, 2026</p>
-<div class="prose">
-<p>Iron Lantern Studios owns the text, art, code and media on this site unless a project page says otherwise. You can link to any page and share screenshots of it.</p>
-<p>You can&rsquo;t copy the site&rsquo;s art or project media and present it as your own work.</p>
-<p>Projects marked &ldquo;In development&rdquo; or &ldquo;Rebuilding&rdquo; are unfinished. Descriptions show what I&rsquo;m building, and details can change before release.</p>
-<p>This site sells nothing and charges nothing. If I sell a game or asset pack later, it will come with its own terms and refund policy at the point of sale.</p>
-<p>The site uses Archivo and JetBrains Mono under the SIL Open Font License 1.1. Copies of both licenses sit in the site&rsquo;s fonts folder. Smooth scrolling comes from Lenis under the MIT License, with its license in the vendor folder.</p>
-</div>
+<body data-page="legal">
+
+<header class="bar">
+  <div class="wrap bar-inner">
+    <a class="brand" href="index.html" aria-label="Iron Lantern Studios home">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+        <path class="frame" d="M16 3v3M10 8h12l-2 3H12zM11 12h10v13H11zM9 27h14"/>
+        <path class="flame" d="M16 15c2.2 2 2.2 4.2 0 6.2-2.2-2-2.2-4.2 0-6.2z"/>
+      </svg>
+      <span class="brand-name">Iron Lantern<span> Studios</span></span>
+    </a>
+    <nav class="nav" aria-label="Pages">
+      <a href="index.html">Home</a>
+      <a href="games.html">Games</a>
+      <a href="store.html">Store</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="tools">
+      <button class="cmd-open" type="button" aria-haspopup="dialog" aria-controls="cmdk" aria-label="Search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="theme" type="button" aria-label="Switch to light theme">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
+      </button>
+      <button class="menu-open" type="button" aria-label="Open menu" aria-haspopup="dialog" aria-controls="menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="page-hero wrap">
+    <h1>Terms</h1>
+    <p class="meta">Last updated October 26, 2026</p>
+  </section>
+  <section class="wrap block">
+    <div class="prose legal">
+      <p>Iron Lantern Studios owns the text, art, code and media on this site unless a page says otherwise. You can link to any page and share screenshots of it. You can&rsquo;t copy the art or project media and present it as your own work.</p>
+      <p>Games and assets marked &ldquo;In development&rdquo; or &ldquo;In progress&rdquo; are unfinished. Their descriptions show what I&rsquo;m building, and details can change before release.</p>
+      <h2>Buying</h2>
+      <p>This site sells nothing directly. When you buy a game or asset, you buy it through itch.io, Fab or the Roblox Creator Store, and that store&rsquo;s terms apply alongside the license that comes with the item. The <a href="refunds.html">refund policy</a> explains what happens if something goes wrong.</p>
+      <h2>Credits</h2>
+      <p>The site uses Archivo and JetBrains Mono under the SIL Open Font License 1.1, and Lenis for smooth scrolling under the MIT License. Copies of each license sit in the site&rsquo;s fonts and vendor folders.</p>
+    </div>
+  </section>
 </main>
-<footer class="foot"><div class="wrap foot-inner"><span>&copy; 2026 Iron Lantern Studios</span><nav aria-label="Legal"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav></div></footer>
+
+<footer class="foot">
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <span class="brand-name">Iron Lantern Studios</span>
+      <p>Games and 3D assets, made by Jason.</p>
+    </div>
+    <nav aria-label="Site"><h4>Site</h4><a href="games.html">Games</a><a href="store.html">Store</a><a href="about.html">About</a><a href="contact.html">Contact</a></nav>
+    <nav aria-label="Legal"><h4>Legal</h4><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="refunds.html">Refunds</a></nav>
+    <nav aria-label="Elsewhere" class="foot-social" hidden><h4>Elsewhere</h4><div data-socials></div></nav>
+  </div>
+  <div class="wrap foot-base"><span>&copy; <span class="num" data-year>2026</span> Iron Lantern Studios</span></div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog id="menu" class="menu" aria-label="Menu">
+  <nav class="menu-body" aria-label="Pages">
+    <a href="index.html">Home</a><a href="games.html">Games</a><a href="store.html">Store</a><a href="about.html">About</a><a href="contact.html">Contact</a>
+  </nav>
+</dialog>
+
+<dialog id="sheet" class="sheet" aria-labelledby="sheet-title">
+  <div class="sheet-body" data-lenis-prevent>
+    <div class="grip" aria-hidden="true"></div>
+    <button class="close" type="button" aria-label="Close"><kbd>Esc</kbd></button>
+    <div class="sheet-cover" id="sheet-cover"></div>
+    <p class="eyebrow" id="sheet-kind"></p>
+    <h2 id="sheet-title"></h2>
+    <p class="meta" id="sheet-meta"></p>
+    <ul class="tags" id="sheet-tags"></ul>
+    <div class="prose" id="sheet-about"></div>
+    <div class="media" id="sheet-media"></div>
+    <div class="links" id="sheet-links"></div>
+  </div>
+</dialog>
+
+<dialog id="cmdk" class="cmdk" aria-label="Search">
+  <div class="cmdk-box">
+    <input id="cmdk-input" type="text" placeholder="Jump to a game, asset or page" autocomplete="off" aria-controls="cmdk-list" aria-autocomplete="list">
+    <ul id="cmdk-list" role="listbox" data-lenis-prevent></ul>
+    <p class="cmdk-hint"><kbd>&uarr;</kbd><kbd>&darr;</kbd> to move <kbd>Enter</kbd> to open <kbd>Esc</kbd> to close</p>
+  </div>
+</dialog>
+
+<script src="vendor/lenis.min.js"></script>
+<script src="projects.js"></script>
+<script src="site.js"></script>
 </body>
 </html>

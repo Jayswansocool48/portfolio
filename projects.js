@@ -1,30 +1,43 @@
-// Everything shown on the site lives in this file. Edit an entry and the page updates.
+// Everything the site shows lives in this file. Edit an entry and every page updates.
 
 window.STUDIO = {
+  since: 2020,
   email: "jason.harvey@brickedmyportfolio.com",
   discord: "ironlanternstudio",
+  // Paste a full link to show an icon in the footer and on the Contact page. Empty ones stay hidden.
+  socials: {
+    itch: "",
+    youtube: "",
+    github: "",
+    steam: "",
+    twitter: "",
+    instagram: "",
+  },
 };
 
-// Games and assets.
+// Games.
 //
-// id      lowercase-with-dashes, used in the link (#after-hours)
-// kind    "game" or "asset"
-// tags    a few genre or format words
-// status  a short label, like "In development" or "Coming soon"
-// summary one line for the list
-// about   a paragraph or two for the detail sheet
-// price   optional, like "$9.99". Leave it out until the item is for sale
-// images  optional, [{ src: "media/after-hours-1.webp", alt: "...", tint: "#2a2f2b" }]
-// links   optional, [{ label: "Buy on Gumroad", href: "https://..." }]
-// show    set to false to hide an entry without deleting it
+// id        lowercase-with-dashes, used in links (games.html#after-hours)
+// tags      a few genre words, used by the filter on the Games page
+// status    a short label, like "In development"
+// featured  true shows it on the home page
+// current   true puts it in the "Now building" carousel
+// tint      a color for the cover art until real screenshots exist
+// summary   one line for cards
+// about     a paragraph or two for the detail sheet
+// images    optional, [{ src: "media/after-hours-1.webp", alt: "...", tint: "#2a2f2b" }]
+// links     optional, [{ label: "Wishlist on itch.io", href: "https://..." }, { label: "Watch the trailer", href: "..." }]
+// show      false hides it everywhere without deleting it
 
-window.PROJECTS = [
+window.GAMES = [
   {
     id: "after-hours",
     name: "After Hours",
-    kind: "game",
     tags: ["Horror", "First-person", "PSX style"],
     status: "In development",
+    featured: true,
+    current: true,
+    tint: "#5f7a5c",
     summary: "First-person horror you play from a desk chair.",
     about: [
       "You stay late at a computer after everyone else goes home. The computer runs a full in-game operating system with a browser, a mail client and files to dig through, and you use it to finish each chapter's work.",
@@ -35,9 +48,11 @@ window.PROJECTS = [
   {
     id: "crazy-taxi",
     name: "Crazy Taxi",
-    kind: "game",
     tags: ["Action", "Racing", "Arcade"],
     status: "Building assets",
+    featured: true,
+    current: true,
+    tint: "#d9a92b",
     summary: "Grab a fare, beat the clock, pull a stunt on the way.",
     about: [
       "You tear through city streets picking up passengers and dropping them off before the timer runs out, with jumps and stunts along the route.",
@@ -48,9 +63,10 @@ window.PROJECTS = [
   {
     id: "mirrored-life",
     name: "Mirrored Life",
-    kind: "game",
     tags: ["Fantasy", "Story-driven", "Casual"],
     status: "In development",
+    featured: true,
+    tint: "#4f8f8c",
     summary: "One person, two parallel lives.",
     about: ["You follow two storylines that run side by side, each showing a different side of the same person."],
     show: true,
@@ -58,19 +74,36 @@ window.PROJECTS = [
   {
     id: "the-last-draft",
     name: "The Last Draft",
-    kind: "game",
     tags: ["Mystery", "Adventure", "Story-driven"],
     status: "In development",
+    featured: true,
+    tint: "#9a6a45",
     summary: "A writer fights to finish one final manuscript.",
     about: ["You play a writer trying to finish their last manuscript, and you piece together why it matters so much to them."],
     show: true,
   },
+];
+
+// Store items.
+//
+// category  "models", "gui", "scripts", "audio" or "textures"
+// engine    what it works with, like "Any engine" or "Roblox"
+// price     like "$9.99". Leave it out while the item isn't for sale
+// buy       where to buy it once it's for sale, { label: "Buy on itch.io", href: "https://..." }
+// added     "YYYY-MM-DD", used by the Newest sort
+// featured  true shows it on the home page
+
+window.ASSETS = [
   {
     id: "road-prop-pack",
     name: "Road Prop Pack",
-    kind: "asset",
-    tags: ["3D", "Low poly", "Props"],
+    category: "models",
+    engine: "Any engine",
+    tags: ["Low poly", "Props", "Racing"],
     status: "In progress",
+    featured: true,
+    added: "2025-06-01",
+    tint: "#d0782c",
     summary: "Low-poly props for roads and racing scenes.",
     about: ["Cones, barriers, signs and street furniture, modeled low-poly so you can fill a whole city block without hurting frame rate. I'm building it alongside Crazy Taxi."],
     show: true,
@@ -78,13 +111,23 @@ window.PROJECTS = [
   {
     id: "roblox-menu-gui",
     name: "Roblox Menu GUI",
-    kind: "asset",
-    tags: ["Roblox", "GUI", "Animated"],
+    category: "gui",
+    engine: "Roblox",
+    tags: ["Menu", "Animated", "Mobile-ready"],
     status: "In progress",
+    featured: true,
+    added: "2025-03-01",
+    tint: "#3f7fbf",
     summary: "An animated menu system for Roblox games.",
     about: ["A full menu system for Roblox with animated transitions, themes you can change, and layouts that work on phones."],
     show: true,
   },
 ];
 
-window.KINDS = { game: "Game", asset: "Asset" };
+window.CATEGORIES = {
+  models: "3D models",
+  gui: "GUI and UI",
+  scripts: "Scripts",
+  audio: "Audio",
+  textures: "Textures",
+};
