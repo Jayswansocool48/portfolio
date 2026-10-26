@@ -16,7 +16,7 @@ document.getElementById("year").textContent = new Date().getFullYear();
 const list = document.getElementById("work-list");
 if (PROJECTS.length === 0) {
   const li = document.createElement("li");
-  li.innerHTML = '<span class="empty">Nothing here yet. Check back after the rebuilds.</span>';
+  li.innerHTML = '<span class="empty">Nothing yet.</span>';
   list.appendChild(li);
 } else {
   for (const p of PROJECTS) {
