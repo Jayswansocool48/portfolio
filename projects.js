@@ -1,25 +1,29 @@
-// Every project on the site lives here. Add, remove or reorder entries and the page updates.
-//
-// id        lowercase-with-dashes, used in the link (#after-hours)
-// name      shown on the page
-// kind      "game", "app", "system" or "asset"
-// platform  where it runs
-// status    a short label, like "In development" or "Rebuilding"
-// summary   one line for the index
-// about     a paragraph or two for the detail sheet (array of strings)
-// images    optional, [{ src: "media/after-hours-1.webp", alt: "...", tint: "#2a2f2b" }]
-// links     optional, [{ label: "Source on GitHub", href: "https://github.com/..." }]
-// show      set to false to hide a project without deleting it
+// Everything shown on the site lives in this file. Edit an entry and the page updates.
 
-// Contact email shown in the footer. Leave it empty to hide the line.
-window.STUDIO = { email: "" };
+window.STUDIO = {
+  email: "jason.harvey@brickedmyportfolio.com",
+  discord: "ironlanternstudio",
+};
+
+// Games and assets.
+//
+// id      lowercase-with-dashes, used in the link (#after-hours)
+// kind    "game" or "asset"
+// tags    a few genre or format words
+// status  a short label, like "In development" or "Coming soon"
+// summary one line for the list
+// about   a paragraph or two for the detail sheet
+// price   optional, like "$9.99". Leave it out until the item is for sale
+// images  optional, [{ src: "media/after-hours-1.webp", alt: "...", tint: "#2a2f2b" }]
+// links   optional, [{ label: "Buy on Gumroad", href: "https://..." }]
+// show    set to false to hide an entry without deleting it
 
 window.PROJECTS = [
   {
     id: "after-hours",
     name: "After Hours",
     kind: "game",
-    platform: "PC",
+    tags: ["Horror", "First-person", "PSX style"],
     status: "In development",
     summary: "First-person horror you play from a desk chair.",
     about: [
@@ -29,100 +33,58 @@ window.PROJECTS = [
     show: true,
   },
   {
-    id: "game-codex",
-    name: "Game Codex",
-    kind: "app",
-    platform: "Pop!_OS",
-    status: "Rebuilding",
-    summary: "A game design app for planning a game from first idea onward.",
-    about: ["You keep a game's ideas, story and design documents in one desktop app. After Hours started its life here."],
+    id: "crazy-taxi",
+    name: "Crazy Taxi",
+    kind: "game",
+    tags: ["Action", "Racing", "Arcade"],
+    status: "Building assets",
+    summary: "Grab a fare, beat the clock, pull a stunt on the way.",
+    about: [
+      "You tear through city streets picking up passengers and dropping them off before the timer runs out, with jumps and stunts along the route.",
+      "I'm modeling the city and the cars right now.",
+    ],
     show: true,
   },
   {
-    id: "poputil",
-    name: "PopUtil",
-    kind: "app",
-    platform: "Pop!_OS",
-    status: "Rebuilding",
-    summary: "A one-window control panel for Pop!_OS.",
-    about: ["PopUtil gathers system tweaks, disk cleanup and AI-assisted file sorting into one window, in the spirit of WinUtil on Windows."],
+    id: "mirrored-life",
+    name: "Mirrored Life",
+    kind: "game",
+    tags: ["Fantasy", "Story-driven", "Casual"],
+    status: "In development",
+    summary: "One person, two parallel lives.",
+    about: ["You follow two storylines that run side by side, each showing a different side of the same person."],
     show: true,
   },
   {
-    id: "codeling",
-    name: "Codeling",
-    kind: "app",
-    platform: "Web, Android",
-    status: "Rebuilding",
-    summary: "A web app that teaches you to code.",
-    about: ["You learn to code through short lessons in the browser. Codeling also ships as an Android APK."],
+    id: "the-last-draft",
+    name: "The Last Draft",
+    kind: "game",
+    tags: ["Mystery", "Adventure", "Story-driven"],
+    status: "In development",
+    summary: "A writer fights to finish one final manuscript.",
+    about: ["You play a writer trying to finish their last manuscript, and you piece together why it matters so much to them."],
     show: true,
   },
   {
-    id: "inkwell",
-    name: "Inkwell",
-    kind: "app",
-    platform: "Android, Fire tablets",
-    status: "Rebuilding",
-    summary: "A drawing app for Fire tablets.",
-    about: ["A painting and sketching app in the spirit of ibisPaint and Procreate, tuned for the Fire 7 and Fire HD 8."],
+    id: "road-prop-pack",
+    name: "Road Prop Pack",
+    kind: "asset",
+    tags: ["3D", "Low poly", "Props"],
+    status: "In progress",
+    summary: "Low-poly props for roads and racing scenes.",
+    about: ["Cones, barriers, signs and street furniture, modeled low-poly so you can fill a whole city block without hurting frame rate. I'm building it alongside Crazy Taxi."],
     show: true,
   },
   {
-    id: "deskmate",
-    name: "Deskmate",
-    kind: "app",
-    platform: "Android, Linux, Windows",
-    status: "Rebuilding",
-    summary: "Turns a tablet into a tool panel for your desktop.",
-    about: ["You pick a tool on the tablet and use it alongside your computer. Deskmate works with Pop!_OS, other Linux distributions and Windows."],
-    show: true,
-  },
-  {
-    id: "haven",
-    name: "Haven",
-    kind: "app",
-    platform: "Fire TV, Android",
-    status: "Rebuilding",
-    summary: "A clean Fire TV launcher with a phone remote.",
-    about: ["Haven replaces the Fire TV home screen with a calmer one, and a companion app turns your phone into the remote."],
-    show: true,
-  },
-  {
-    id: "hub",
-    name: "Hub",
-    kind: "app",
-    platform: "Roku",
-    status: "Rebuilding",
-    summary: "One Roku channel that holds several apps.",
-    about: ["Hub bundles a home screen with a clock, a web browser with an ad blocker, a media library and a photo screensaver into one sideloaded channel. A small server on your home network lets you send things to the TV from your PC."],
-    show: true,
-  },
-  {
-    id: "lumen-os",
-    name: "Lumen OS",
-    kind: "system",
-    platform: "Nintendo DSi",
-    status: "Rebuilding",
-    summary: "A custom system menu for the Nintendo DSi.",
-    about: ["Lumen OS keeps the feel of the original DSi menu and adds smoother animations, soft sounds and a launch that zooms into an app's cartridge."],
-    show: true,
-  },
-  {
-    id: "flip-phone-rom",
-    name: "T435D ROM",
-    kind: "system",
-    platform: "TCL T435D, KaiOS",
-    status: "Rebuilding",
-    summary: "A custom ROM for the TCL T435D flip phone.",
-    about: ["A replacement system for the TCL T435D, in a standard build and a Death Note themed build."],
+    id: "roblox-menu-gui",
+    name: "Roblox Menu GUI",
+    kind: "asset",
+    tags: ["Roblox", "GUI", "Animated"],
+    status: "In progress",
+    summary: "An animated menu system for Roblox games.",
+    about: ["A full menu system for Roblox with animated transitions, themes you can change, and layouts that work on phones."],
     show: true,
   },
 ];
 
-window.KINDS = {
-  game: "Game",
-  app: "App",
-  system: "System",
-  asset: "Asset",
-};
+window.KINDS = { game: "Game", asset: "Asset" };

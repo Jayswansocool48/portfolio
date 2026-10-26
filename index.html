@@ -4,22 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Iron Lantern Studios</title>
-<meta name="description" content="Iron Lantern Studios makes horror games, plus the apps and systems built along the way.">
+<meta name="description" content="Iron Lantern Studios is Jason's game studio. Games in development, 3D and UI assets, and how to get in touch.">
 <meta name="robots" content="noindex, nofollow">
 <meta name="color-scheme" content="dark light">
 <link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3v3M10 8h12l-2 3H12z' stroke='%23e2a04a' stroke-width='2' fill='none'/%3E%3Cpath d='M11 12h10v13H11z' stroke='%23e2a04a' stroke-width='2' fill='none'/%3E%3Cpath d='M16 15c2 2 2 4 0 6-2-2-2-4 0-6z' fill='%23e2a04a'/%3E%3Cpath d='M9 27h14' stroke='%23e2a04a' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="vendor/lenis.css">
 <link rel="stylesheet" href="style.css">
 <script>
-  // Apply the saved theme before first paint so the page never flashes.
   try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  document.documentElement.classList.add("js");
 </script>
 </head>
 <body>
 
 <header class="bar">
   <div class="wrap bar-inner">
-    <a class="brand" href="#top" aria-label="Iron Lantern Studios, home">
+    <a class="brand" href="#top" aria-label="Iron Lantern Studios, back to top">
       <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
         <path class="frame" d="M16 3v3M10 8h12l-2 3H12zM11 12h10v13H11zM9 27h14"/>
         <path class="flame" d="M16 15c2.2 2 2.2 4.2 0 6.2-2.2-2-2.2-4.2 0-6.2z"/>
@@ -27,8 +28,10 @@
       <span class="brand-name">Iron Lantern<span> Studios</span></span>
     </a>
     <nav class="nav" aria-label="Sections">
-      <a href="#work">Work</a>
+      <a href="#games">Games</a>
+      <a href="#assets">Assets</a>
       <a href="#about">About</a>
+      <a href="#contact">Contact</a>
       <button class="cmd-open" type="button" aria-haspopup="dialog" aria-controls="cmdk">
         <span>Search</span><kbd>Ctrl K</kbd>
       </button>
@@ -42,10 +45,14 @@
 <main id="top">
   <section class="hero wrap">
     <h1>Iron Lantern Studios</h1>
-    <p class="lede">I make horror games, and the apps and systems I build along the way. Everything I&rsquo;m working on is on this page.</p>
+    <p class="lede">I&rsquo;m Jason, a game developer and 3D artist. I build games and the assets that go into them.</p>
+    <div class="cta">
+      <a class="btn" href="#games">See the games</a>
+      <a class="btn ghost" href="#contact">Get in touch</a>
+    </div>
   </section>
 
-  <section class="featured wrap" aria-labelledby="featured-name">
+  <section class="featured wrap reveal" aria-labelledby="featured-name">
     <figure class="screen">
       <div class="screen-glass">
         <canvas id="room" width="320" height="240" role="img" aria-label="A dark room seen from a desk. A door at the back opens slowly and someone stands in it."></canvas>
@@ -59,48 +66,104 @@
     <div class="featured-copy">
       <p class="eyebrow">Now building</p>
       <h2 id="featured-name">After Hours</h2>
-      <p class="meta">Game &middot; PC &middot; In development</p>
+      <p class="meta">Horror &middot; First-person &middot; In development</p>
       <p>You stay late at a computer after everyone else goes home. You answer email and finish your work, and each time you turn around, something in the room has moved.</p>
       <a class="btn" href="#after-hours">Read about After Hours</a>
     </div>
   </section>
 
-  <section id="work" class="work wrap" aria-labelledby="work-title">
-    <div class="work-head">
-      <h2 id="work-title">Work</h2>
-      <div class="filters" role="tablist" aria-label="Filter projects"></div>
+  <section id="games" class="list-section wrap reveal" aria-labelledby="games-title">
+    <div class="section-head">
+      <h2 id="games-title">Games</h2>
+      <p class="count num" id="games-count"></p>
     </div>
-    <ul class="index" id="index" aria-live="polite">
-      <li class="row skel" aria-hidden="true"><span></span><span></span><span></span></li>
+    <ul class="index" id="games-list" data-kind="game">
       <li class="row skel" aria-hidden="true"><span></span><span></span><span></span></li>
       <li class="row skel" aria-hidden="true"><span></span><span></span><span></span></li>
       <li class="row skel" aria-hidden="true"><span></span><span></span><span></span></li>
     </ul>
   </section>
 
-  <section id="about" class="about wrap" aria-labelledby="about-title">
-    <h2 id="about-title">About</h2>
-    <div class="prose">
-      <p>Iron Lantern Studios is one developer working out of Pop!_OS. I write the games, and when I need a tool that doesn&rsquo;t exist, I write that too.</p>
-      <p>Most of the apps listed here are getting rebuilt from scratch. Each one comes back to this page with screenshots when it&rsquo;s ready.</p>
+  <section id="assets" class="list-section wrap reveal" aria-labelledby="assets-title">
+    <div class="section-head">
+      <h2 id="assets-title">Assets</h2>
+      <p class="count num" id="assets-count"></p>
+    </div>
+    <p class="section-note">Models and systems you can drop into your own games. Each one goes on sale when it&rsquo;s finished.</p>
+    <ul class="index" id="assets-list" data-kind="asset">
+      <li class="row skel" aria-hidden="true"><span></span><span></span><span></span></li>
+      <li class="row skel" aria-hidden="true"><span></span><span></span><span></span></li>
+    </ul>
+  </section>
+
+  <section id="about" class="about wrap reveal" aria-labelledby="about-title">
+    <div class="about-intro">
+      <h2 id="about-title">About</h2>
+      <div class="prose">
+        <p>I&rsquo;ve been making games and assets since 2020. Most days I&rsquo;m in Unity or Blender, modeling props or tuning a level until it feels right.</p>
+        <p>Iron Lantern Studios is the name I put on that work. It&rsquo;s just me for now.</p>
+      </div>
+    </div>
+
+    <div class="about-grid">
+      <div>
+        <h3>How I got here</h3>
+        <ol class="timeline">
+          <li><span class="yr num">2020</span><div><strong>First steps</strong><p>I started in Roblox Studio and left a trail of unfinished projects behind me.</p></div></li>
+          <li><span class="yr num">2021</span><div><strong>Learning to code</strong><p>I picked up Lua and Python and learned how program logic fits together.</p></div></li>
+          <li><span class="yr num">2023</span><div><strong>Reset</strong><p>I stepped away from code for a while and came back wanting it more.</p></div></li>
+          <li><span class="yr num">2024</span><div><strong>Web design</strong><p>I learned HTML and CSS through Codecademy and built my first small site.</p></div></li>
+          <li><span class="yr num">2025</span><div><strong>Crazy Taxi</strong><p>I started my first full game project and began modeling its city.</p></div></li>
+          <li><span class="yr num">2026</span><div><strong>After Hours</strong><p>I started a horror game and rebuilt this site from scratch.</p></div></li>
+        </ol>
+      </div>
+      <div>
+        <h3>Toolkit</h3>
+        <dl class="toolkit">
+          <div><dt>Engines</dt><dd>Unity, Unreal Engine, Roblox Studio</dd></div>
+          <div><dt>Art</dt><dd>Blender, 3D modeling, texturing, UI design</dd></div>
+          <div><dt>Code</dt><dd>Python, Lua, JavaScript, HTML and CSS, C++ (learning)</dd></div>
+          <div><dt>Design</dt><dd>Game design, level design</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact wrap reveal" aria-labelledby="contact-title">
+    <h2 id="contact-title">Let&rsquo;s talk</h2>
+    <p class="lede">Want a custom asset, a hand on your game, or to team up on something? Email me or message me on Discord. I usually reply within two days.</p>
+    <div class="handles">
+      <div class="handle">
+        <span class="h-label">Email</span>
+        <a class="h-value" id="email-link" href="#"></a>
+        <button class="copy" type="button" data-copy="email">Copy</button>
+      </div>
+      <div class="handle">
+        <span class="h-label">Discord</span>
+        <span class="h-value" id="discord-value"></span>
+        <button class="copy" type="button" data-copy="discord">Copy</button>
+      </div>
     </div>
   </section>
 </main>
 
 <footer class="foot">
   <div class="wrap foot-inner">
-    <span>&copy; <span id="year" class="num">2026</span> Iron Lantern Studios<span id="contact" hidden> &middot; <a id="contact-mail" href=""></a></span></span>
+    <span>&copy; <span id="year" class="num">2026</span> Iron Lantern Studios</span>
     <nav aria-label="Legal"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav>
   </div>
 </footer>
 
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 <dialog id="sheet" class="sheet" aria-labelledby="sheet-title">
-  <div class="sheet-body">
+  <div class="sheet-body" data-lenis-prevent>
     <div class="grip" aria-hidden="true"></div>
     <button class="close" type="button" aria-label="Close"><kbd>Esc</kbd></button>
     <p class="eyebrow" id="sheet-kind"></p>
     <h2 id="sheet-title"></h2>
     <p class="meta" id="sheet-meta"></p>
+    <ul class="tags" id="sheet-tags"></ul>
     <div class="prose" id="sheet-about"></div>
     <div class="media" id="sheet-media"></div>
     <div class="links" id="sheet-links"></div>
@@ -109,12 +172,13 @@
 
 <dialog id="cmdk" class="cmdk" aria-label="Search">
   <div class="cmdk-box">
-    <input id="cmdk-input" type="text" placeholder="Jump to a project or section" autocomplete="off" aria-controls="cmdk-list" aria-autocomplete="list">
-    <ul id="cmdk-list" role="listbox"></ul>
+    <input id="cmdk-input" type="text" placeholder="Jump to a game, asset or section" autocomplete="off" aria-controls="cmdk-list" aria-autocomplete="list">
+    <ul id="cmdk-list" role="listbox" data-lenis-prevent></ul>
     <p class="cmdk-hint"><kbd>&uarr;</kbd><kbd>&darr;</kbd> to move <kbd>Enter</kbd> to open <kbd>Esc</kbd> to close</p>
   </div>
 </dialog>
 
+<script src="vendor/lenis.min.js"></script>
 <script src="projects.js"></script>
 <script src="room.js"></script>
 <script src="site.js"></script>

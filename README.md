@@ -2,11 +2,11 @@
 
 The Iron Lantern Studios website. Plain HTML, CSS and JavaScript with no build step.
 
-## Add or change a project
+## Add or change a game or asset
 
-Edit `projects.js`. Each entry is one project. Set `show: false` to hide one. Put screenshots in a `media/` folder and list them under `images`.
+Edit `projects.js`. Each entry is a game or an asset. Set `show: false` to hide one. Put screenshots in a `media/` folder and list them under `images`. Add a `price` and a `links` entry when an asset goes on sale.
 
-Set `STUDIO.email` at the top of the same file to show a contact address in the footer.
+The email and Discord shown under Contact sit at the top of the same file.
 
 ## Preview
 
