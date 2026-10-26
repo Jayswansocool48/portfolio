@@ -18,7 +18,7 @@ Status for the Iron Lantern Studios site. "N/A" means the site has nothing the r
 | 12 | Remove unsupported claims | Done: every game and asset shows its real status. The old site's placeholder prices, discounts and zero-value stats are gone. |
 | 13 | Alt text for accessibility | Done: the canvas has a text description. `projects.js` takes an `alt` for every image. |
 | 14 | Fix color contrast | Done: body text and the flame accent pass WCAG AA in both themes. |
-| 15 | Full keyboard navigation | Done: every control is a real button or link with a visible focus ring. Ctrl+K search, arrow keys in the filters, Esc closes sheets. |
+| 15 | Full keyboard navigation | Done: every control is a real button or link with a visible focus ring. Ctrl+K search with arrow keys, Esc closes sheets, E works the lamp. |
 | 16 | Add business details | Done: studio name in every footer, email and Discord in the Contact section. |
 | 17 | Age consent for kids' data | N/A: the site collects no data from anyone. |
 | 18 | Unsubscribe link in emails | N/A: the site sends no email. |
