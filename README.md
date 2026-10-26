@@ -1,15 +1,20 @@
 # portfolio
 
-Static portfolio site. No build step: `index.html`, `style.css` and `site.js` are the whole site.
+The Iron Lantern Studios website. Plain HTML, CSS and JavaScript with no build step.
 
-## Edit
+## Add or change a project
 
-Open `site.js`. Set `STUDIO` to your name and add rebuilt projects to `PROJECTS`.
+Edit `projects.js`. Each entry is one project. Set `show: false` to hide one. Put screenshots in a `media/` folder and list them under `images`.
+
+Set `STUDIO.email` at the top of the same file to show a contact address in the footer.
 
 ## Preview
 
-Open `index.html` in a browser, or run `python3 -m http.server` in this folder and visit `localhost:8000`.
+Run `python3 -m http.server` in this folder and open `localhost:8000`. Opening `index.html` straight from disk blocks the fonts.
 
 ## Go live
 
-Make the repo public, then turn on GitHub Pages (Settings > Pages > Deploy from branch > `main`, root). Remove the `noindex` meta tag in `index.html` when you want search engines to find it.
+1. Finish `COMPLIANCE.md`.
+2. Make the repo public.
+3. Turn on GitHub Pages: Settings > Pages > Deploy from branch > `main`, root.
+4. Remove the `noindex` meta tag from each page when you want search engines to list the site.

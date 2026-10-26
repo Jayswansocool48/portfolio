@@ -3,128 +3,120 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>After Hours | Studio Name</title>
-<meta name="description" content="After Hours is a first-person horror game in development. You stay late at a computer while something moves in the room behind you.">
+<title>Iron Lantern Studios</title>
+<meta name="description" content="Iron Lantern Studios makes horror games, plus the apps and systems built along the way.">
 <meta name="robots" content="noindex, nofollow">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Sans+Condensed:wght@400;500&family=VT323&display=swap">
+<meta name="color-scheme" content="dark light">
+<link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3v3M10 8h12l-2 3H12z' stroke='%23e2a04a' stroke-width='2' fill='none'/%3E%3Cpath d='M11 12h10v13H11z' stroke='%23e2a04a' stroke-width='2' fill='none'/%3E%3Cpath d='M16 15c2 2 2 4 0 6-2-2-2-4 0-6z' fill='%23e2a04a'/%3E%3Cpath d='M9 27h14' stroke='%23e2a04a' stroke-width='2'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
+<script>
+  // Apply the saved theme before first paint so the page never flashes.
+  try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
 </head>
 <body>
-<canvas id="grain" aria-hidden="true"></canvas>
 
 <header class="bar">
   <div class="wrap bar-inner">
-    <a class="studio" href="#top" data-studio>Studio Name</a>
-    <nav aria-label="Sections">
-      <a href="#game">Game</a>
-      <a href="#chapters">Chapters</a>
+    <a class="brand" href="#top" aria-label="Iron Lantern Studios, home">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+        <path class="frame" d="M16 3v3M10 8h12l-2 3H12zM11 12h10v13H11zM9 27h14"/>
+        <path class="flame" d="M16 15c2.2 2 2.2 4.2 0 6.2-2.2-2-2.2-4.2 0-6.2z"/>
+      </svg>
+      <span class="brand-name">Iron Lantern<span> Studios</span></span>
+    </a>
+    <nav class="nav" aria-label="Sections">
       <a href="#work">Work</a>
       <a href="#about">About</a>
+      <button class="cmd-open" type="button" aria-haspopup="dialog" aria-controls="cmdk">
+        <span>Search</span><kbd>Ctrl K</kbd>
+      </button>
+      <button class="theme" type="button" aria-label="Switch to light theme">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
+      </button>
     </nav>
   </div>
 </header>
 
 <main id="top">
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <p class="tag">In development &middot; First-person horror</p>
-        <h1>After Hours</h1>
-        <p class="lede">You stay late at a computer after everyone else goes home. You answer email and finish your work, and each time you turn around, something in the room has moved.</p>
-        <dl class="specs">
-          <div><dt>Style</dt><dd>PSX-era, low to medium poly</dd></div>
-          <div><dt>Structure</dt><dd>Chapters, one person each</dd></div>
-          <div><dt>Now building</dt><dd>Chapter 1, the house</dd></div>
-        </dl>
-      </div>
+  <section class="hero wrap">
+    <h1>Iron Lantern Studios</h1>
+    <p class="lede">I make horror games, and the apps and systems I build along the way. Everything I&rsquo;m working on is on this page.</p>
+  </section>
 
-      <figure class="crt" aria-label="A monitor glowing in a dark room">
-        <div class="crt-screen">
-          <canvas id="room" width="320" height="240"></canvas>
-          <div class="crt-ui">
-            <span class="clock" id="clock">02:47</span>
-            <button class="prompt" type="button" aria-label="Toggle the desk lamp"><kbd>E</kbd> Desk lamp</button>
-          </div>
+  <section class="featured wrap" aria-labelledby="featured-name">
+    <figure class="screen">
+      <div class="screen-glass">
+        <canvas id="room" width="320" height="240" role="img" aria-label="A dark room seen from a desk. A door at the back opens slowly and someone stands in it."></canvas>
+        <div class="screen-ui">
+          <span id="clock" class="num">02:47</span>
+          <button class="lamp" type="button" aria-pressed="false"><kbd>E</kbd> Desk lamp</button>
         </div>
-        <figcaption>Concept frame, drawn in code at 320 &times; 240. Press E to work the lamp.</figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <section id="game" class="band">
-    <div class="wrap two-col">
-      <h2>The desktop is the game</h2>
-      <div class="prose">
-        <p>You spend almost the whole game at a desk. The computer in front of you runs a full in-game operating system with a browser, a mail client and files to dig through, and you use it to finish each chapter&rsquo;s work.</p>
-        <p>The scares come from the room around you. You shut the door an hour ago and now it hangs open. Someone sits in the chair you walked past earlier. You decide when to turn around, and the later it gets, the longer you put it off.</p>
-        <p>Look at anything you can use and you&rsquo;ll see its name and the key to press, like E for the desk lamp.</p>
       </div>
+      <figcaption>Concept frame for After Hours, drawn in code at 320 &times; 240.</figcaption>
+    </figure>
+    <div class="featured-copy">
+      <p class="eyebrow">Now building</p>
+      <h2 id="featured-name">After Hours</h2>
+      <p class="meta">Game &middot; PC &middot; In development</p>
+      <p>You stay late at a computer after everyone else goes home. You answer email and finish your work, and each time you turn around, something in the room has moved.</p>
+      <a class="btn" href="#after-hours">Read about After Hours</a>
     </div>
   </section>
 
-  <section id="chapters" class="band">
-    <div class="wrap">
-      <h2>Chapters</h2>
-      <p class="sub">You play a different person in each chapter, each one at their own desk.</p>
-      <ol class="chapters">
-        <li class="open">
-          <span class="ch-num">Ch. 1</span>
-          <span class="ch-name">The House</span>
-          <span class="ch-state">In development</span>
-        </li>
-        <li class="locked">
-          <span class="ch-num">Ch. 2</span>
-          <span class="ch-name">Unannounced</span>
-          <span class="ch-state">Locked</span>
-        </li>
-        <li class="locked">
-          <span class="ch-num">Ch. 3</span>
-          <span class="ch-name">Unannounced</span>
-          <span class="ch-state">Locked</span>
-        </li>
-      </ol>
+  <section id="work" class="work wrap" aria-labelledby="work-title">
+    <div class="work-head">
+      <h2 id="work-title">Work</h2>
+      <div class="filters" role="tablist" aria-label="Filter projects"></div>
     </div>
+    <ul class="index" id="index" aria-live="polite">
+      <li class="row skel" aria-hidden="true"><span></span><span></span><span></span></li>
+      <li class="row skel" aria-hidden="true"><span></span><span></span><span></span></li>
+      <li class="row skel" aria-hidden="true"><span></span><span></span><span></span></li>
+      <li class="row skel" aria-hidden="true"><span></span><span></span><span></span></li>
+    </ul>
   </section>
 
-  <section class="band">
-    <div class="wrap">
-      <h2>From the build</h2>
-      <p class="sub">I&rsquo;ll post screenshots and clips here once Chapter 1 has a playable room.</p>
-      <div class="shots" aria-label="Screenshot slots, empty until the first build">
-        <div class="shot" aria-hidden="true"></div>
-        <div class="shot" aria-hidden="true"></div>
-        <div class="shot wide" aria-hidden="true"></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="work" class="band">
-    <div class="wrap">
-      <h2>Other work</h2>
-      <p class="sub">I&rsquo;m rebuilding my older projects and will add each one here when it&rsquo;s done.</p>
-      <ul class="work" id="work-list"></ul>
-    </div>
-  </section>
-
-  <section id="about" class="band">
-    <div class="wrap two-col">
-      <h2>About</h2>
-      <div class="prose">
-        <p><span data-studio>Studio Name</span> is a solo game developer making small, low-poly horror games and the tools behind them.</p>
-      </div>
+  <section id="about" class="about wrap" aria-labelledby="about-title">
+    <h2 id="about-title">About</h2>
+    <div class="prose">
+      <p>Iron Lantern Studios is one developer working out of Pop!_OS. I write the games, and when I need a tool that doesn&rsquo;t exist, I write that too.</p>
+      <p>Most of the apps listed here are getting rebuilt from scratch. Each one comes back to this page with screenshots when it&rsquo;s ready.</p>
     </div>
   </section>
 </main>
 
 <footer class="foot">
   <div class="wrap foot-inner">
-    <span>&copy; <span id="year">2026</span> <span data-studio>Studio Name</span></span>
-    <span>This site sets no cookies and collects no data.</span>
+    <span>&copy; <span id="year" class="num">2026</span> Iron Lantern Studios<span id="contact" hidden> &middot; <a id="contact-mail" href=""></a></span></span>
+    <nav aria-label="Legal"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav>
   </div>
 </footer>
 
+<dialog id="sheet" class="sheet" aria-labelledby="sheet-title">
+  <div class="sheet-body">
+    <div class="grip" aria-hidden="true"></div>
+    <button class="close" type="button" aria-label="Close"><kbd>Esc</kbd></button>
+    <p class="eyebrow" id="sheet-kind"></p>
+    <h2 id="sheet-title"></h2>
+    <p class="meta" id="sheet-meta"></p>
+    <div class="prose" id="sheet-about"></div>
+    <div class="media" id="sheet-media"></div>
+    <div class="links" id="sheet-links"></div>
+  </div>
+</dialog>
+
+<dialog id="cmdk" class="cmdk" aria-label="Search">
+  <div class="cmdk-box">
+    <input id="cmdk-input" type="text" placeholder="Jump to a project or section" autocomplete="off" aria-controls="cmdk-list" aria-autocomplete="list">
+    <ul id="cmdk-list" role="listbox"></ul>
+    <p class="cmdk-hint"><kbd>&uarr;</kbd><kbd>&darr;</kbd> to move <kbd>Enter</kbd> to open <kbd>Esc</kbd> to close</p>
+  </div>
+</dialog>
+
+<script src="projects.js"></script>
+<script src="room.js"></script>
 <script src="site.js"></script>
 </body>
 </html>

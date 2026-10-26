@@ -1,141 +1,229 @@
-// ---- Edit these two things ----------------------------------------------
+(function () {
+  const projects = (window.PROJECTS || []).filter(p => p.show !== false);
+  const KINDS = window.KINDS;
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+  };
+  const transition = fn => (document.startViewTransition && !matchMedia("(prefers-reduced-motion: reduce)").matches)
+    ? document.startViewTransition(fn) : fn();
 
-// Your studio or handle name. It fills every [data-studio] spot on the page.
-const STUDIO = "Studio Name";
+  $("#year").textContent = new Date().getFullYear();
+  const mail = (window.STUDIO || {}).email;
+  if (mail) { const a = $("#contact-mail"); a.href = "mailto:" + mail; a.textContent = mail; $("#contact").hidden = false; }
 
-// Rebuilt projects go here. Each one shows up under "Other work".
-// { name: "Game Codex", note: "Game design app for Pop!_OS", state: "Rebuilding", url: "" }
-const PROJECTS = [];
-
-// -------------------------------------------------------------------------
-
-document.querySelectorAll("[data-studio]").forEach(el => { el.textContent = STUDIO; });
-document.title = "After Hours | " + STUDIO;
-document.getElementById("year").textContent = new Date().getFullYear();
-
-const list = document.getElementById("work-list");
-if (PROJECTS.length === 0) {
-  const li = document.createElement("li");
-  li.innerHTML = '<span class="empty">Nothing yet.</span>';
-  list.appendChild(li);
-} else {
-  for (const p of PROJECTS) {
-    const li = document.createElement("li");
-    const name = p.url ? `<a class="w-name" href="${p.url}">${p.name}</a>` : `<span class="w-name">${p.name}</span>`;
-    li.innerHTML = `<div>${name}<span class="w-note">${p.note || ""}</span></div><span class="w-state">${p.state || ""}</span>`;
-    list.appendChild(li);
+  // ---- Theme ------------------------------------------------------------
+  const themeBtn = $(".theme");
+  const isDark = () => {
+    const t = document.documentElement.dataset.theme;
+    return t ? t === "dark" : !matchMedia("(prefers-color-scheme: light)").matches;
+  };
+  const labelTheme = () => themeBtn.setAttribute("aria-label", isDark() ? "Switch to light theme" : "Switch to dark theme");
+  labelTheme();
+  function toggleTheme() {
+    const next = isDark() ? "light" : "dark";
+    transition(() => { document.documentElement.dataset.theme = next; });
+    store.set("theme", next);
+    labelTheme();
   }
-}
+  themeBtn.addEventListener("click", toggleTheme);
 
-const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // ---- Filters and index -------------------------------------------------
+  const filtersEl = $(".filters"), indexEl = $("#index");
+  const groups = [["all", "All"], ["game", "Games"], ["app", "Apps"], ["system", "Systems"], ["asset", "Assets"]];
+  let filter = store.get("filter") || "all";
 
-// ---- Film grain ---------------------------------------------------------
-const grain = document.getElementById("grain");
-const g = grain.getContext("2d");
-grain.width = 160; grain.height = 160;
-function drawGrain() {
-  const img = g.createImageData(160, 160);
-  for (let i = 0; i < img.data.length; i += 4) {
-    const v = Math.random() * 255;
-    img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
-    img.data[i + 3] = 255;
+  function renderFilters() {
+    filtersEl.innerHTML = groups.map(([k, label]) => {
+      const n = k === "all" ? projects.length : projects.filter(p => p.kind === k).length;
+      return `<button type="button" role="tab" data-k="${k}" aria-selected="${k === filter}">${label} <b>${n}</b></button>`;
+    }).join("");
   }
-  g.putImageData(img, 0, 0);
-}
-drawGrain();
-if (!still) setInterval(drawGrain, 90);
 
-// ---- The room, 320x240, ordered dither ----------------------------------
-const room = document.getElementById("room");
-const r = room.getContext("2d");
-const W = 320, H = 240;
-const frame = r.createImageData(W, H);
-const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
-
-// Dark-to-pale ramps: cold for monitor light, warm for the lamp.
-const cold = [[5, 6, 5], [18, 22, 19], [38, 45, 40], [70, 78, 70], [120, 128, 112]];
-const warm = [[6, 5, 4], [30, 22, 14], [72, 50, 26], [140, 98, 48], [214, 170, 104]];
-
-// Back wall and door, in screen pixels.
-const BW = { x0: 104, x1: 216, y0: 62, y1: 152 };
-const DOOR = { x0: 140, x1: 172, y0: 88, y1: 152 };
-
-let lamp = false;
-
-function surface(x, y, open) {
-  // Returns base reflectance; 0 for the void past the door.
-  if (x >= BW.x0 && x < BW.x1 && y >= BW.y0 && y < BW.y1) {
-    if (x >= DOOR.x0 && x < DOOR.x1 && y >= DOOR.y0) {
-      const gap = DOOR.x0 + open * (DOOR.x1 - DOOR.x0);
-      if (x < gap) {
-        // Something stands in the doorway once it is mostly open.
-        const cx = DOOR.x0 + 11, headY = 102;
-        const inHead = (x - cx) ** 2 + (y - headY) ** 2 < 20;
-        const inBody = Math.abs(x - cx) < 6 - (y < 112 ? 2 : 0) && y > 106;
-        if (open > 0.55 && (inHead || inBody)) return 0.09;
-        return 0;
-      }
-      return 0.42;
+  function renderIndex() {
+    const list = filter === "all" ? projects : projects.filter(p => p.kind === filter);
+    if (!list.length) {
+      const msg = filter === "asset"
+        ? "<strong>No asset packs yet.</strong>Models, textures and sound packs go here when they're ready to use."
+        : "<strong>Nothing here yet.</strong>";
+      indexEl.innerHTML = `<li class="empty">${msg}</li>`;
+      return;
     }
-    return 0.3;
+    indexEl.innerHTML = list.map(p => `
+      <li class="row" style="view-transition-name: row-${esc(p.id)}">
+        <button type="button" data-id="${esc(p.id)}" aria-haspopup="dialog">
+          <span class="r-name">${esc(p.name)}</span>
+          <span class="r-sum">${esc(p.summary)}</span>
+          <span class="r-plat">${esc(p.platform)}</span>
+          <span class="chip${p.status === "In development" ? " live" : ""}">${esc(p.status)}</span>
+        </button>
+      </li>`).join("");
   }
-  if (y >= BW.y1) {
-    // Floor, with a desk edge across the bottom.
-    if (y > 214) return 0.5;
-    return 0.22 + ((Math.floor((x - 160) / ((y - 120) * 0.35 + 1)) & 1) ? 0.03 : 0);
-  }
-  if (y < BW.y0) return 0.1;            // ceiling
-  return 0.26;                          // side walls
-}
 
-function render(t) {
-  const cycle = (t / 1000) % 22;
-  const open = cycle < 8 ? 0 : cycle < 13 ? (cycle - 8) / 5 : cycle < 18 ? 1 : Math.max(0, 1 - (cycle - 18) / 2);
-  const flicker = 0.94 + 0.06 * Math.sin(t / 47) * Math.sin(t / 113);
-  const ramp = lamp ? warm : cold;
-  const d = frame.data;
-  for (let y = 0; y < H; y++) {
-    for (let x = 0; x < W; x++) {
-      const base = surface(x, y, open);
-      let light;
-      if (lamp) {
-        const dx = x - 280, dy = y - 230;
-        light = Math.max(0.15, 1.5 - Math.sqrt(dx * dx + dy * dy) / 210);
-      } else {
-        const dx = x - 160, dy = y - 260;
-        light = Math.max(0.12, 1.05 - Math.sqrt(dx * dx + dy * dy) / 260) * flicker;
-      }
-      const v = Math.min(1, base * light * 2.2);
-      const level = v * (ramp.length - 1);
-      const lo = Math.floor(level);
-      const pick = (level - lo) * 16 > bayer[(y & 3) * 4 + (x & 3)] ? lo + 1 : lo;
-      const c = ramp[Math.min(ramp.length - 1, pick)];
-      const i = (y * W + x) * 4;
-      d[i] = c[0]; d[i + 1] = c[1]; d[i + 2] = c[2]; d[i + 3] = 255;
+  filtersEl.addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if (!b || b.dataset.k === filter) return;
+    filter = b.dataset.k;
+    store.set("filter", filter);
+    transition(() => { renderFilters(); renderIndex(); });
+  });
+  filtersEl.addEventListener("keydown", e => {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    const btns = [...filtersEl.querySelectorAll("button")];
+    const i = btns.indexOf(document.activeElement);
+    const next = btns[(i + (e.key === "ArrowRight" ? 1 : -1) + btns.length) % btns.length];
+    next.focus(); next.click();
+  });
+  indexEl.addEventListener("click", e => {
+    const b = e.target.closest("button[data-id]");
+    if (b) location.hash = b.dataset.id;
+  });
+
+  renderFilters();
+  renderIndex();
+
+  // ---- Project sheet -----------------------------------------------------
+  const sheet = $("#sheet"), body = sheet.querySelector(".sheet-body");
+  let opener = null;
+
+  function fill(p) {
+    $("#sheet-kind").textContent = KINDS[p.kind] || p.kind;
+    $("#sheet-title").textContent = p.name;
+    $("#sheet-meta").textContent = `${p.platform} · ${p.status}`;
+    $("#sheet-about").innerHTML = (p.about || [p.summary]).map(t => `<p>${esc(t)}</p>`).join("");
+    const media = $("#sheet-media");
+    if (p.images && p.images.length) {
+      media.innerHTML = p.images.map(im =>
+        `<div class="shot" style="--tint:${esc(im.tint || "")}"><img src="${esc(im.src)}" alt="${esc(im.alt || "")}" loading="lazy" decoding="async"></div>`).join("");
+      media.querySelectorAll("img").forEach(img => {
+        const done = () => img.classList.add("loaded");
+        img.complete ? done() : img.addEventListener("load", done, { once: true });
+      });
+    } else {
+      media.innerHTML = `<div class="shot skel-box" aria-hidden="true"></div><p class="media-note">Screenshots go up when the ${p.status === "Rebuilding" ? "rebuild" : "first build"} is ready.</p>`;
     }
+    $("#sheet-links").innerHTML = (p.links || []).map(l => `<a href="${esc(l.href)}" rel="noopener">${esc(l.label)}</a>`).join("");
   }
-  r.putImageData(frame, 0, 0);
-}
 
-// Clock starts at 02:47 and runs one in-game minute every 4 seconds.
-const clock = document.getElementById("clock");
-function tickClock(t) {
-  const mins = 2 * 60 + 47 + Math.floor(t / 4000);
-  clock.textContent = String(Math.floor(mins / 60) % 24).padStart(2, "0") + ":" + String(mins % 60).padStart(2, "0");
-}
+  function openSheet(p) {
+    opener = document.activeElement;
+    fill(p);
+    body.scrollTop = 0;
+    if (!sheet.open) sheet.showModal();
+    requestAnimationFrame(() => sheet.classList.add("in"));
+  }
 
-let last = 0;
-function loop(t) {
-  if (t - last > 66) { render(t); tickClock(t); last = t; }   // ~15 fps, on purpose
-  requestAnimationFrame(loop);
-}
-if (still) render(9000); else requestAnimationFrame(loop);
+  function closeSheet() {
+    if (!sheet.open) return;
+    sheet.classList.remove("in");
+    body.style.transform = "";
+    const finish = () => { if (!sheet.classList.contains("in")) { sheet.close(); if (opener) opener.focus(); } };
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    reduced ? finish() : body.addEventListener("transitionend", finish, { once: true });
+  }
 
-// Press E (or tap the prompt) to work the lamp.
-const prompt = document.querySelector(".prompt");
-function toggleLamp() { lamp = !lamp; if (still) render(9000); }
-document.addEventListener("keydown", e => {
-  if ((e.key === "e" || e.key === "E") && !e.target.closest("input, textarea")) toggleLamp();
-});
-prompt.addEventListener("click", toggleLamp);
-prompt.style.cursor = "pointer";
+  // The URL hash decides which project is open, so the back button closes the sheet.
+  function route() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const p = projects.find(x => x.id === id);
+    if (p) openSheet(p); else closeSheet();
+  }
+  function dismiss() {
+    if (projects.some(x => "#" + x.id === location.hash)) history.back(); else closeSheet();
+  }
+  addEventListener("hashchange", route);
+  sheet.addEventListener("cancel", e => { e.preventDefault(); dismiss(); });
+  sheet.addEventListener("click", e => { if (e.target === sheet) dismiss(); });
+  sheet.querySelector(".close").addEventListener("click", dismiss);
+
+  // Drag to dismiss: down on phones, right on desktop. Let go early and it springs back.
+  let drag = null;
+  body.addEventListener("pointerdown", e => {
+    if (e.button !== 0 || e.target.closest("a, button, img")) return;
+    const phone = matchMedia("(max-width: 700px)").matches;
+    if (phone && body.scrollTop > 0) return;
+    drag = { phone, x: e.clientX, y: e.clientY, d: 0, id: e.pointerId, live: false };
+  });
+  body.addEventListener("pointermove", e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const d = drag.phone ? e.clientY - drag.y : e.clientX - drag.x;
+    const cross = drag.phone ? Math.abs(e.clientX - drag.x) : Math.abs(e.clientY - drag.y);
+    if (!drag.live) {
+      if (d > 8 && d > cross) { drag.live = true; sheet.classList.add("dragging"); body.setPointerCapture(e.pointerId); }
+      else if (cross > 8) { drag = null; return; }
+      else return;
+    }
+    drag.d = Math.max(0, d);
+    body.style.transform = drag.phone ? `translateY(${drag.d}px)` : `translateX(${drag.d}px)`;
+  });
+  const endDrag = () => {
+    if (!drag) return;
+    const size = drag.phone ? body.offsetHeight : body.offsetWidth;
+    const far = drag.live && drag.d > size * 0.25;
+    sheet.classList.remove("dragging");
+    body.style.transform = "";
+    drag = null;
+    if (far) dismiss();
+  };
+  body.addEventListener("pointerup", endDrag);
+  body.addEventListener("pointercancel", endDrag);
+
+  // ---- Command menu (Ctrl+K) ---------------------------------------------
+  const cmdk = $("#cmdk"), input = $("#cmdk-input"), listEl = $("#cmdk-list");
+  const actions = [
+    ...projects.map(p => ({ label: p.name, hint: KINDS[p.kind], terms: p.platform + " " + p.summary, run: () => { location.hash = p.id; } })),
+    { label: "Work", hint: "Section", run: () => $("#work").scrollIntoView() },
+    { label: "About", hint: "Section", run: () => $("#about").scrollIntoView() },
+    { label: "Toggle light and dark", hint: "Theme", run: toggleTheme },
+    { label: "Privacy", hint: "Page", run: () => { location.href = "privacy.html"; } },
+    { label: "Terms", hint: "Page", run: () => { location.href = "terms.html"; } },
+  ];
+  let matches = actions, sel = 0;
+
+  function renderCmd() {
+    const q = input.value.trim().toLowerCase();
+    matches = q ? actions.filter(a => (a.label + " " + a.hint + " " + (a.terms || "")).toLowerCase().includes(q)) : actions;
+    sel = Math.min(sel, Math.max(0, matches.length - 1));
+    listEl.innerHTML = matches.length
+      ? matches.map((a, i) => `<li role="option" id="opt-${i}" data-i="${i}" aria-selected="${i === sel}"><span>${esc(a.label)}</span><span>${esc(a.hint)}</span></li>`).join("")
+      : `<li class="none">No matches for &ldquo;${esc(input.value)}&rdquo;</li>`;
+    input.setAttribute("aria-activedescendant", matches.length ? `opt-${sel}` : "");
+    const cur = listEl.querySelector('[aria-selected="true"]');
+    if (cur) cur.scrollIntoView({ block: "nearest" });
+  }
+  function openCmd() {
+    if (cmdk.open) return;
+    if (sheet.open) dismiss();
+    input.value = ""; sel = 0; renderCmd();
+    cmdk.showModal(); input.focus();
+    requestAnimationFrame(() => cmdk.classList.add("in"));
+  }
+  function closeCmd() { cmdk.classList.remove("in"); cmdk.close(); }
+  function runSel(i) { const a = matches[i]; if (!a) return; closeCmd(); a.run(); }
+
+  $(".cmd-open").addEventListener("click", openCmd);
+  input.addEventListener("input", () => { sel = 0; renderCmd(); });
+  input.addEventListener("keydown", e => {
+    if (e.key === "ArrowDown") { e.preventDefault(); sel = (sel + 1) % Math.max(1, matches.length); renderCmd(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); sel = (sel - 1 + matches.length) % Math.max(1, matches.length); renderCmd(); }
+    else if (e.key === "Enter") { e.preventDefault(); runSel(sel); }
+  });
+  listEl.addEventListener("click", e => { const li = e.target.closest("[data-i]"); if (li) runSel(+li.dataset.i); });
+  cmdk.addEventListener("click", e => { if (e.target === cmdk) closeCmd(); });
+  addEventListener("keydown", e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); cmdk.open ? closeCmd() : openCmd(); }
+  });
+  if (/Mac|iPhone|iPad/.test(navigator.platform)) document.querySelectorAll(".cmd-open kbd").forEach(k => { k.textContent = "⌘ K"; });
+
+  // ---- Prefetch the policy pages when someone heads for them -------------
+  document.querySelectorAll('.foot a[href$=".html"]').forEach(a => a.addEventListener("pointerenter", () => {
+    if (a.dataset.pf) return;
+    a.dataset.pf = 1;
+    const l = document.createElement("link"); l.rel = "prefetch"; l.href = a.getAttribute("href");
+    document.head.appendChild(l);
+  }, { once: true }));
+
+  route();
+})();
