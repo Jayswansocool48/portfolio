@@ -90,12 +90,18 @@
 
 <dialog id="menu" class="menu" aria-label="Menu">
   <div class="scrim" aria-hidden="true"></div>
-  <nav class="menu-body" aria-label="Pages">
-    <a href="index.html">Home</a><a href="games.html">Games</a><a href="store.html">Store</a><a href="about.html">About</a><a href="contact.html">Contact</a>
-  </nav>
+  <div class="menu-panel">
+    <div class="wrap menu-top">
+      <span class="brand-name">Iron Lantern<span> Studios</span></span>
+      <button class="menu-close" type="button" aria-label="Close menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <nav class="wrap menu-links" aria-label="Pages">
+      <a href="index.html">Home</a><a href="games.html">Games</a><a href="store.html">Store</a><a href="about.html">About</a><a href="contact.html">Contact</a>
+    </nav>
+  </div>
 </dialog>
 
-<dialog id="sheet" class="sheet" aria-labelledby="sheet-title">
+<dialog id="sheet" class="modal" aria-labelledby="sheet-title">
   <div class="scrim" aria-hidden="true"></div>
   <div class="sheet-body" data-lenis-prevent>
     <div class="grip" aria-hidden="true"></div>

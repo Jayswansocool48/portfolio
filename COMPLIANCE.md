@@ -16,9 +16,9 @@ Status for the Iron Lantern Studios site. "N/A" means the site has nothing the r
 | 10 | Remove hidden fees | Done: prices show in full on each card once set. The store you buy from shows tax at checkout. |
 | 11 | Remove fake reviews | Done: the star ratings and review quotes from the old site are gone. No testimonials. |
 | 12 | Remove unsupported claims | Done: every game and asset shows its real status. The old site's placeholder prices, discounts and zero-value stats are gone. |
-| 13 | Alt text for accessibility | Done: the canvas has a text description. `projects.js` takes an `alt` for every image. |
+| 13 | Alt text for accessibility | Done: covers carry "Cover art for" plus the name, placeholders say what's coming, and `projects.js` takes an `alt` for every screenshot. |
 | 14 | Fix color contrast | Done: body text and the flame accent pass WCAG AA in both themes. |
-| 15 | Full keyboard navigation | Done: every control is a real button or link with a visible focus ring. Ctrl+K search with arrow keys, arrow keys in the filter chips, Esc closes sheets and menus, E works the lamp. |
+| 15 | Full keyboard navigation | Done: every control is a real button or link with a visible focus ring. Ctrl+K search with arrow keys, arrow keys in the filter chips, arrow keys move the Current projects carousel, Esc closes the details window, search and menu. |
 | 16 | Add business details | Done: studio name in every footer, email and Discord in the Contact section. |
 | 17 | Age consent for kids' data | N/A: the site collects no data from anyone. |
 | 18 | Unsubscribe link in emails | N/A: the site sends no email. |
@@ -38,10 +38,10 @@ Status for the Iron Lantern Studios site. "N/A" means the site has nothing the r
 
 ## Motion
 
-Sheets, the phone menu, search, the toast, section reveals, image fades and the home carousel all run on closed-form damped springs in `motion.js`. A spring keeps its velocity, so grabbing or reversing an animation mid-flight continues smoothly, and a flick on a sheet hands its speed to the closing spring. Page and theme transitions use the same spring, sampled into a CSS `linear()` curve. The site plays no sound. Reduced-motion settings skip every animation.
+Everything that moves runs on closed-form damped springs in `motion.js`: headline words rising on load, sections and cards rising in turn as you scroll, the About numbers counting up, the Current projects carousel, the details window growing out of the card you picked, the drop-down phone menu, search, the toast and image fades. A spring keeps its velocity, so grabbing or reversing an animation mid-flight continues smoothly, and a flick on the carousel or the details window hands its speed to the next spring. Page and theme transitions use the same spring, sampled into a CSS `linear()` curve. The site plays no sound. Reduced-motion settings skip every animation.
 
 ## UX patterns
 
-In: command menu (Ctrl+K), shortcut hints, copy toasts, pre-rendering (speculation rules on hover), tinted image placeholders, view transitions within and between pages, swipe-to-dismiss sheets with Esc, interruptible animations, 44 px hit targets, safe area insets, tabular numbers, balanced headlines, continuous corners.
+In: command menu (Ctrl+K), shortcut hints, copy toasts, pre-rendering (speculation rules on hover), tinted image placeholders, view transitions within and between pages, swipe-to-dismiss details window (drag down) with Esc, interruptible animations, 44 px hit targets, safe area insets, tabular numbers, balanced headlines, continuous corners.
 
 Skipped, nothing to apply them to: skeleton loaders (all content ships with the page), optimistic updates, undo toasts, stale-while-revalidate, predictive back, one-time code autofill, idempotency keys, safe triangle menus.

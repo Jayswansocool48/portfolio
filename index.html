@@ -63,35 +63,20 @@
     </div>
   </section>
 
-  <section class="current wrap reveal" aria-labelledby="current-title">
+  <section class="wrap block reveal" aria-labelledby="show-title">
     <div class="section-head">
-      <h2 id="current-title">Now building</h2>
-      <div class="car-ctrl">
-        <button type="button" class="car-btn" data-dir="-1" aria-label="Previous project"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-        <button type="button" class="car-btn" data-dir="1" aria-label="Next project"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
-      </div>
+      <h2 id="show-title">Current projects</h2>
+      <p class="count num" id="stage-count"></p>
     </div>
-    <div class="carousel" id="carousel" aria-roledescription="carousel" aria-label="Projects I'm working on now">
-      <article class="slide" aria-roledescription="slide" aria-labelledby="slide-after-hours">
-        <figure class="screen">
-          <div class="screen-glass">
-            <canvas id="room" width="320" height="240" role="img" aria-label="A dark room seen from a desk. A door at the back opens slowly and someone stands in it."></canvas>
-            <div class="screen-ui">
-              <span id="clock" class="num">02:47</span>
-              <button class="lamp" type="button" aria-pressed="false"><kbd>E</kbd> Desk lamp</button>
-            </div>
-          </div>
-          <figcaption>Concept frame, drawn in code at 320 &times; 240.</figcaption>
-        </figure>
-        <div class="slide-copy">
-          <p class="meta">Horror &middot; In development</p>
-          <h3 class="slide-title" id="slide-after-hours">After Hours</h3>
-          <p>You stay late at a computer after everyone else goes home. You answer email and finish your work, and each time you turn around, something in the room has moved.</p>
-          <a class="btn" href="#after-hours">Read more</a>
-        </div>
-      </article>
+    <div class="stage" id="stage" aria-roledescription="carousel" aria-label="Current projects" tabindex="0">
+      <div class="stage-track" id="stage-track"></div>
+      <button type="button" class="stage-btn prev" data-dir="-1" aria-label="Previous project"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <button type="button" class="stage-btn next" data-dir="1" aria-label="Next project"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
     </div>
-    <div class="dots" id="dots" role="tablist" aria-label="Choose a project"></div>
+    <div class="stage-caption">
+      <div class="stage-text" id="stage-text" aria-live="polite"></div>
+      <div class="dots" id="dots" role="tablist" aria-label="Choose a project"></div>
+    </div>
   </section>
 
   <section class="wrap block reveal" aria-labelledby="home-games-title">
@@ -136,12 +121,18 @@
 
 <dialog id="menu" class="menu" aria-label="Menu">
   <div class="scrim" aria-hidden="true"></div>
-  <nav class="menu-body" aria-label="Pages">
-    <a href="index.html" aria-current="page">Home</a><a href="games.html">Games</a><a href="store.html">Store</a><a href="about.html">About</a><a href="contact.html">Contact</a>
-  </nav>
+  <div class="menu-panel">
+    <div class="wrap menu-top">
+      <span class="brand-name">Iron Lantern<span> Studios</span></span>
+      <button class="menu-close" type="button" aria-label="Close menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <nav class="wrap menu-links" aria-label="Pages">
+      <a href="index.html" aria-current="page">Home</a><a href="games.html">Games</a><a href="store.html">Store</a><a href="about.html">About</a><a href="contact.html">Contact</a>
+    </nav>
+  </div>
 </dialog>
 
-<dialog id="sheet" class="sheet" aria-labelledby="sheet-title">
+<dialog id="sheet" class="modal" aria-labelledby="sheet-title">
   <div class="scrim" aria-hidden="true"></div>
   <div class="sheet-body" data-lenis-prevent>
     <div class="grip" aria-hidden="true"></div>
@@ -169,7 +160,6 @@
 <script src="vendor/lenis.min.js"></script>
 <script src="motion.js"></script>
 <script src="projects.js"></script>
-<script src="room.js"></script>
 <script src="site.js"></script>
 </body>
 </html>

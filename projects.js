@@ -21,8 +21,11 @@ window.STUDIO = {
 // tags      a few genre words, used by the filter on the Games page
 // status    a short label, like "In development"
 // featured  true shows it on the home page
-// current   true puts it in the "Now building" carousel
-// tint      a color for the cover art until real screenshots exist
+// current   true puts it in the Current projects carousel on the home page
+// caption   one line under it in the carousel, like "Working on the assets"
+// cover     the cover image, like "media/after-hours-cover.webp". Until the file exists, a placeholder shows
+// trailer   optional teaser or trailer video file, like "media/after-hours-teaser.mp4" (with an optional poster image)
+// tint      a background color for the placeholder
 // summary   one line for cards
 // about     a paragraph or two for the detail sheet
 // images    optional, [{ src: "media/after-hours-1.webp", alt: "...", tint: "#2a2f2b" }]
@@ -37,7 +40,10 @@ window.GAMES = [
     status: "In development",
     featured: true,
     current: true,
-    tint: "#5f7a5c",
+    caption: "First teaser",
+    cover: "media/after-hours-cover.webp",
+    trailer: { src: "media/after-hours-teaser.mp4", poster: "media/after-hours-cover.webp" },
+    tint: "#1d221f",
     summary: "First-person horror you play from a desk chair.",
     about: [
       "You stay late at a computer after everyone else goes home. The computer runs a full in-game operating system with a browser, a mail client and files to dig through, and you use it to finish each chapter's work.",
@@ -52,7 +58,8 @@ window.GAMES = [
     status: "Building assets",
     featured: true,
     current: true,
-    tint: "#d9a92b",
+    caption: "Working on the assets",
+    tint: "#2a2618",
     summary: "Pick up fares and race the clock across a stunt-filled city.",
     about: [
       "You tear through city streets picking up passengers and dropping them off before the timer runs out, with jumps and stunts along the route.",
@@ -66,7 +73,7 @@ window.GAMES = [
     tags: ["Fantasy", "Story-driven", "Casual"],
     status: "In development",
     featured: true,
-    tint: "#4f8f8c",
+    tint: "#18252a",
     summary: "One person, two parallel lives.",
     about: ["You follow two storylines that run side by side, each showing a different side of the same person."],
     show: true,
@@ -77,7 +84,7 @@ window.GAMES = [
     tags: ["Mystery", "Adventure", "Story-driven"],
     status: "In development",
     featured: true,
-    tint: "#9a6a45",
+    tint: "#2a211b",
     summary: "A writer fights to finish one final manuscript.",
     about: ["You play a writer trying to finish their last manuscript, and you piece together why it matters so much to them."],
     show: true,
@@ -103,7 +110,7 @@ window.ASSETS = [
     status: "In progress",
     featured: true,
     added: "2025-06-01",
-    tint: "#d0782c",
+    tint: "#2b2018",
     summary: "Low-poly props for roads and racing scenes.",
     about: ["Cones, barriers, signs and street furniture for city and racing scenes, modeled low-poly. I'm building the pack alongside Crazy Taxi."],
     show: true,
@@ -117,7 +124,7 @@ window.ASSETS = [
     status: "In progress",
     featured: true,
     added: "2025-03-01",
-    tint: "#3f7fbf",
+    tint: "#18212b",
     summary: "An animated menu system for Roblox games.",
     about: ["A full menu system for Roblox with animated transitions, themes you can change, and layouts that work on phones."],
     show: true,

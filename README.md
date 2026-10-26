@@ -6,7 +6,7 @@ Pages: `index.html` (home), `games.html`, `store.html`, `about.html`, `contact.h
 
 ## Add or change a game or asset
 
-Edit `projects.js`. `GAMES` and `ASSETS` hold every entry, and the comments above each list explain the fields. Set `show: false` to hide one. Put screenshots in a `media/` folder and list them under `images`; the first image becomes the cover.
+Edit `projects.js`. `GAMES` and `ASSETS` hold every entry, and the comments above each list explain the fields. Set `show: false` to hide one. Put covers, screenshots and trailers in `media/`. A game's `cover` and `trailer` fields point at those files, and a placeholder shows until each file exists.
 
 To put an asset on sale, add `price` and `buy: { label, href }` pointing at its itch.io, Fab or Roblox Creator Store page.
 
