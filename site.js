@@ -5,6 +5,11 @@
   const ASSETS = visible(window.ASSETS).map(a => ({ ...a, kind: "asset" }));
   const ITEMS = [...GAMES, ...ASSETS];
   const CATS = window.CATEGORIES || {};
+  const STORES = window.STORES || {};
+  const offers = item => (item.get || []).map(o => {
+    const st = STORES[o.store] || {};
+    return { ...o, name: st.name || o.store, action: o.action || st.action || "Get", note: st.note };
+  });
   const { spring, stop } = window.Motion;
   const page = document.body.dataset.page;
   const $ = s => document.querySelector(s);
@@ -13,10 +18,6 @@
   const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const phone = () => matchMedia("(max-width: 700px)").matches;
-  const store = {
-    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
-    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
-  };
   const transition = fn => (document.startViewTransition && !reduced) ? document.startViewTransition(fn) : fn();
   const priceNum = p => p.price ? parseFloat(String(p.price).replace(/[^0-9.]/g, "")) : Infinity;
   const POP = { stiffness: 190, damping: 19, mass: 1 };   // a little overshoot for entrances
@@ -84,22 +85,6 @@
     spring("count-" + keyN++, { from: 0, to: n, preset: "gentle", precision: 0.02, onUpdate: v => { el.textContent = Math.max(0, Math.round(v)); } });
   }
 
-  // ---- Theme ------------------------------------------------------------
-  const themeBtn = $(".theme");
-  const isDark = () => {
-    const t = document.documentElement.dataset.theme;
-    return t ? t === "dark" : !matchMedia("(prefers-color-scheme: light)").matches;
-  };
-  const labelTheme = () => themeBtn.setAttribute("aria-label", isDark() ? "Switch to light theme" : "Switch to dark theme");
-  labelTheme();
-  function toggleTheme() {
-    const next = isDark() ? "light" : "dark";
-    transition(() => { document.documentElement.dataset.theme = next; });
-    store.set("theme", next);
-    labelTheme();
-  }
-  themeBtn.addEventListener("click", toggleTheme);
-
   // ---- Toast --------------------------------------------------------------
   const toast = $("#toast");
   let toastTimer;
@@ -149,9 +134,16 @@
   const live = s => /development|building/i.test(s);
   function card(item) {
     const meta = item.kind === "asset" ? `${CATS[item.category] || ""} · ${item.engine || ""}` : (item.tags || []).slice(0, 2).join(" · ");
-    const right = item.kind === "asset" && item.price && item.buy
-      ? `<span class="price num">${esc(item.price)}</span><a class="btn small" href="${esc(item.buy.href)}" rel="noopener">${esc(item.buy.label)}</a>`
+    const list = offers(item);
+    const ready = list.filter(o => o.url);
+    const price = item.price || (ready.find(o => o.price) || {}).price;
+    const left = ready.length
+      ? (price ? `<span class="price num">${esc(price)}</span>` : `<span class="chip ok">Available</span>`)
       : `<span class="chip${live(item.status) ? " live" : ""}">${esc(item.status)}</span>`;
+    const pills = list.slice(0, 3).map(o => o.url
+      ? `<a class="pill" href="${esc(o.url)}" target="_blank" rel="noopener">${esc(o.name === "This site" ? "Buy here" : o.name)}</a>`
+      : `<span class="pill soon" title="Coming soon">${esc(o.name === "This site" ? "Buy here" : o.name)}</span>`).join("");
+    const right = `${left}<span class="pills">${pills}</span>`;
     return `<article class="card" style="view-transition-name: card-${esc(item.id)}">
       <button class="card-main" type="button" data-id="${esc(item.id)}" aria-haspopup="dialog">
         ${coverHTML(item)}
@@ -159,6 +151,7 @@
           <span class="card-meta">${esc(meta)}</span>
           <span class="card-title">${esc(item.name)}</span>
           <span class="card-sum">${esc(item.summary)}</span>
+          ${item.platforms ? `<span class="card-plat">${esc(item.platforms.join(" · "))}</span>` : ""}
         </span>
       </button>
       <div class="card-foot">${right}</div>
@@ -405,15 +398,21 @@
     $("#sheet-cover").innerHTML = coverHTML(item);
     $("#sheet-kind").textContent = item.kind === "asset" ? (CATS[item.category] || "Asset") : "Game";
     $("#sheet-title").textContent = item.name;
-    $("#sheet-meta").textContent = [item.status, item.engine, item.price].filter(Boolean).join(" · ");
+    $("#sheet-meta").textContent = [item.status, item.engine, ...(item.platforms || [])].filter(Boolean).join(" · ");
     $("#sheet-tags").innerHTML = (item.tags || []).map(t => `<li>${esc(t)}</li>`).join("");
     $("#sheet-about").innerHTML = (item.about || [item.summary]).map(t => `<p>${esc(t)}</p>`).join("");
     const shots = (item.images || []).filter(im => im.src !== item.cover).slice(item.cover ? 0 : 1);
     $("#sheet-media").innerHTML = shots.length
       ? shots.map(im => `<div class="shot" style="--tint:${esc(im.tint || item.tint)}"><img src="${esc(im.src)}" alt="${esc(im.alt)}" loading="lazy" decoding="async" onload="fadeIn(this)"></div>`).join("")
       : `<p class="media-note">I&rsquo;ll post screenshots here as soon as there&rsquo;s something to show.</p>`;
-    const links = [...(item.buy ? [item.buy] : []), ...(item.links || [])];
-    $("#sheet-links").innerHTML = links.map((l, i) => `<a class="${i === 0 && item.buy ? "btn" : "btn ghost"}" href="${esc(l.href)}" rel="noopener">${esc(l.label)}</a>`).join("");
+    const list = offers(item);
+    $("#sheet-links").innerHTML = list.length ? `<h3>Where to get it</h3><ul class="offers">${list.map(o => {
+      const label = o.store === "site" ? `Buy here${o.price ? " · " + o.price : ""}` : `${o.action}${o.price ? " · " + o.price : ""}`;
+      const note = o.store === "site" ? `<span class="o-note">${esc(S.checkoutProvider ? "Secure checkout by " + S.checkoutProvider : "Secure checkout page")}</span>` : "";
+      return `<li><span class="o-name">${esc(o.name)}${note}</span>${o.url
+        ? `<a class="btn small${o.store === "site" ? "" : " ghost"}" href="${esc(o.url)}" target="_blank" rel="noopener">${esc(label)}</a>`
+        : `<span class="o-soon">Coming soon</span>`}</li>`;
+    }).join("")}</ul>` : "";
   }
   function openModal(item) {
     const first = !modal.open;
@@ -498,7 +497,6 @@
     ...[["Home", "index.html"], ["Games", "games.html"], ["Store", "store.html"], ["About", "about.html"], ["Contact", "contact.html"], ["Refund policy", "refunds.html"], ["Privacy", "privacy.html"], ["Terms", "terms.html"]]
       .map(([label, href]) => ({ label, hint: "Page", run: () => { location.href = href; } })),
     { label: "Copy email address", hint: "Contact", run: async () => { try { await navigator.clipboard.writeText(S.email); say("Copied " + S.email); } catch (e) { say(S.email); } } },
-    { label: "Toggle light and dark", hint: "Theme", run: toggleTheme },
   ];
   let matches = actions, sel = 0, cp = 0;
   function renderCmd() {
