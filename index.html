@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>After Hours | Studio Name</title>
+<meta name="description" content="After Hours, a first-person horror game in development. You work at a computer after dark while the room behind you changes.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Sans+Condensed:wght@400;500&family=VT323&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="grain" aria-hidden="true"></canvas>
+
+<header class="bar">
+  <div class="wrap bar-inner">
+    <a class="studio" href="#top" data-studio>Studio Name</a>
+    <nav aria-label="Sections">
+      <a href="#game">Game</a>
+      <a href="#chapters">Chapters</a>
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="tag">In development &middot; First-person horror</p>
+        <h1>After Hours</h1>
+        <p class="lede">You sit at a computer after everyone has gone home. You check email, open the browser, finish the job. Behind you, the room keeps changing.</p>
+        <dl class="specs">
+          <div><dt>Style</dt><dd>PSX-era, low to medium poly</dd></div>
+          <div><dt>Structure</dt><dd>Chapters, one person each</dd></div>
+          <div><dt>Now building</dt><dd>Chapter 1, the house</dd></div>
+        </dl>
+      </div>
+
+      <figure class="crt" aria-label="A monitor glowing in a dark room">
+        <div class="crt-screen">
+          <canvas id="room" width="320" height="240"></canvas>
+          <div class="crt-ui">
+            <span class="clock" id="clock">02:47</span>
+            <button class="prompt" type="button" aria-label="Toggle the desk lamp"><kbd>E</kbd> Desk lamp</button>
+          </div>
+        </div>
+        <figcaption>320 &times; 240, rendered live. Concept frame, not in-game footage.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="game" class="band">
+    <div class="wrap two-col">
+      <h2>The desktop is the game</h2>
+      <div class="prose">
+        <p>You play almost the whole game at a desk. The computer in front of you runs a full in-game operating system, with a browser, a mail client and files you can dig through. You use it to do the work each chapter gives you.</p>
+        <p>The horror stays out of the monitor. It happens in the room: a door you closed now stands open, a shape sits where a chair used to be. You turn around when you choose to, and you choose less often as the night goes on.</p>
+        <p>Anything you can touch shows its name and a key the moment you look at it, so you always know what you can do and never know what you should.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="chapters" class="band">
+    <div class="wrap">
+      <h2>Chapters</h2>
+      <p class="sub">Each chapter puts you in a different person's chair, at a different desk, on a different night.</p>
+      <ol class="chapters">
+        <li class="open">
+          <span class="ch-num">Ch. 1</span>
+          <span class="ch-name">The House</span>
+          <span class="ch-state">In development</span>
+        </li>
+        <li class="locked">
+          <span class="ch-num">Ch. 2</span>
+          <span class="ch-name">Unannounced</span>
+          <span class="ch-state">Locked</span>
+        </li>
+        <li class="locked">
+          <span class="ch-num">Ch. 3</span>
+          <span class="ch-name">Unannounced</span>
+          <span class="ch-state">Locked</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <h2>From the build</h2>
+      <p class="sub">Screenshots and clips go here once Chapter 1 has a playable room.</p>
+      <div class="shots" aria-label="Screenshot slots, empty until the first build">
+        <div class="shot" aria-hidden="true"></div>
+        <div class="shot" aria-hidden="true"></div>
+        <div class="shot wide" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="work" class="band">
+    <div class="wrap">
+      <h2>Other work</h2>
+      <p class="sub">Older projects come back here once they're rebuilt.</p>
+      <ul class="work" id="work-list"></ul>
+    </div>
+  </section>
+
+  <section id="about" class="band">
+    <div class="wrap two-col">
+      <h2>About</h2>
+      <div class="prose">
+        <p><span data-studio>Studio Name</span> is a solo game developer making small, low-poly horror games and the tools behind them.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <span>&copy; <span id="year">2026</span> <span data-studio>Studio Name</span></span>
+    <span>This site sets no cookies and collects no data.</span>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>
