@@ -1,0 +1,18 @@
+---
+import Base from "./Base.astro";
+const { title, description } = Astro.props;
+---
+<Base title={title} description={description}>
+  <article class="wrap pt-20">
+    <p class="eyebrow m-0">Last updated October 29, 2026</p>
+    <h1 data-words class="m-0 mt-3 font-display text-[clamp(3.2rem,8vw,6rem)] font-black uppercase leading-[0.85] tracking-wide">{title}</h1>
+    <div class="legal mt-10 grid max-w-[64ch] gap-4 text-lg leading-relaxed text-foreground/90">
+      <slot />
+    </div>
+  </article>
+</Base>
+<style is:global>
+  .legal h2 { margin: 1.5rem 0 0; font-family: var(--font-display); font-size: 1.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; }
+  .legal p { margin: 0; }
+  .legal a { color: var(--color-primary); text-decoration: underline; text-underline-offset: 4px; }
+</style>

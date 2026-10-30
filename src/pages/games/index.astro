@@ -1,0 +1,19 @@
+---
+import Base from "@/layouts/Base.astro";
+import Browser from "@/components/Browser";
+import { GAMES } from "@/data/catalog";
+import { toCard } from "@/lib/cards";
+
+const cards = GAMES.map(toCard);
+const tags = [...new Set(GAMES.flatMap(g => g.tags))].map(t => ({ key: t, label: t }));
+---
+<Base title="Games" description="Every game Iron Lantern Studios is building.">
+  <section class="wrap pb-10 pt-20">
+    <p class="eyebrow m-0" data-reveal>{GAMES.length} in development</p>
+    <h1 data-words class="m-0 mt-3 font-display text-[clamp(3.6rem,10vw,8rem)] font-black uppercase leading-[0.85] tracking-wide">Games</h1>
+    <p class="m-0 mt-5 max-w-[46ch] text-lg text-muted-foreground" data-reveal>Everything I'm building, from first sketch to playable. Open one to see where it's headed and where you'll be able to get it.</p>
+  </section>
+  <section class="wrap" aria-label="All games">
+    <Browser client:load cards={cards} filters={tags} filterBy="tag" noun={["game", "games"]} />
+  </section>
+</Base>

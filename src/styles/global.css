@@ -1,0 +1,133 @@
+/*
+  Design direction: a late-night PS1 horror studio. Cold teal-black like a CRT left on in a dark
+  room, phosphor-green readouts, one drop of crimson for anything live or dangerous.
+  Dials: DESIGN_VARIANCE 7 (full-bleed heroes, asymmetric splits), MOTION_INTENSITY 6
+  (springs on entrances, hover tilt, live 3D), VISUAL_DENSITY 4 (spacious, few items per row).
+
+  Theme: "Emerald Dark" by ndlprecieux (21st.dev community themes), dark variant.
+  Kept: its teal-tinted neutrals (background, card, muted, border) and crimson destructive.
+  Changed: its primary hsl(171 90% 50%) reads as neon, so it is desaturated to a phosphor
+  green that still passes WCAG AA as text. Self-check: background, surface and text are cool
+  teal; accent hue 164. No orange, no cream.
+
+  Fonts (self-hosted through Fontsource, SIL OFL 1.1):
+  Big Shoulders Display for titles (condensed, industrial, poster-like),
+  Plus Jakarta Sans for body (from the theme), Fira Code for readouts (from the theme).
+*/
+@import "tailwindcss";
+@import "@fontsource-variable/big-shoulders-display";
+@import "@fontsource-variable/plus-jakarta-sans";
+@import "@fontsource-variable/fira-code";
+
+:root {
+  --background: hsl(180 50% 4%);
+  --foreground: hsl(170 20% 94%);
+  --card: hsl(180 45% 7%);
+  --card-foreground: hsl(170 20% 94%);
+  --popover: hsl(180 45% 7%);
+  --popover-foreground: hsl(170 20% 94%);
+  --primary: hsl(164 52% 62%);
+  --primary-foreground: hsl(180 50% 5%);
+  --secondary: hsl(185 40% 13%);
+  --secondary-foreground: hsl(185 50% 88%);
+  --muted: hsl(180 30% 11%);
+  --muted-foreground: hsl(170 10% 68%);
+  --accent: hsl(190 50% 14%);
+  --accent-foreground: hsl(190 70% 90%);
+  --destructive: hsl(345 80% 48%);
+  --destructive-text: hsl(345 85% 70%);
+  --border: hsl(180 30% 16%);
+  --input: hsl(180 30% 18%);
+  --ring: hsl(164 52% 62%);
+  --radius: 0.875rem;
+  --shade: hsl(180 60% 2% / 0.72);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-text: var(--destructive-text);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-shade: var(--shade);
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 3px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 6px);
+  --font-display: "Big Shoulders Display Variable", "Arial Narrow", sans-serif;
+  --font-sans: "Plus Jakarta Sans Variable", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Fira Code Variable", ui-monospace, "DejaVu Sans Mono", monospace;
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html { scroll-padding-top: 5rem; -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { text-wrap: balance; }
+  ::selection { background: hsl(164 52% 62% / 0.3); }
+  :focus-visible { outline: 2px solid var(--color-ring); outline-offset: 3px; border-radius: 4px; }
+
+  /* No scrollbars anywhere. Wheel, touch, keys and drag still scroll. */
+  * { scrollbar-width: none; }
+  *::-webkit-scrollbar { display: none; width: 0; height: 0; }
+}
+
+@layer utilities {
+  .num { font-variant-numeric: tabular-nums; }
+  .wrap {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-left: max(1.25rem, env(safe-area-inset-left));
+    padding-right: max(1.25rem, env(safe-area-inset-right));
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+  }
+  .squircle { corner-shape: squircle; }
+  /* Faint CRT scanlines for media surfaces. The element sets its own position. */
+  .scanlines::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    background: repeating-linear-gradient(to bottom, hsl(180 60% 2% / 0.22) 0 1px, transparent 1px 3px);
+  }
+}
+
+/* Lenis smooth scrolling */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-stopped { overflow: clip; }
+.lenis [data-lenis-prevent] { overscroll-behavior: contain; }
+
+/* Page-to-page transitions run on a spring (stiffness 260, damping 20) sampled into linear().
+   Reduced motion turns them off. */
+::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) {
+  animation-duration: 615ms;
+  animation-timing-function: linear(0, 0.071, 0.237, 0.436, 0.63, 0.795, 0.92, 1.006, 1.057, 1.08, 1.083, 1.074, 1.059, 1.042, 1.026, 1.014, 1.004, 0.998, 0.994, 0.993, 0.993, 0.994, 0.996, 0.997, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

@@ -1,0 +1,26 @@
+---
+import Base from "@/layouts/Base.astro";
+import Browser from "@/components/Browser";
+import { ASSETS, CATEGORIES } from "@/data/catalog";
+import { toCard } from "@/lib/cards";
+import { href } from "@/lib/utils";
+
+const cards = ASSETS.map(toCard);
+const cats = Object.entries(CATEGORIES).map(([key, label]) => ({ key, label }));
+---
+<Base title="Store" description="Low-poly 3D models, UI kits and scripts from Iron Lantern Studios.">
+  <section class="wrap grid gap-8 pb-10 pt-20 lg:grid-cols-[1.3fr_1fr] lg:items-end">
+    <div>
+      <p class="eyebrow m-0" data-reveal>Asset store</p>
+      <h1 data-words class="m-0 mt-3 font-display text-[clamp(3.6rem,10vw,8rem)] font-black uppercase leading-[0.85] tracking-wide">Store</h1>
+      <p class="m-0 mt-5 max-w-[46ch] text-lg text-muted-foreground" data-reveal>Low-poly models, UI kits and scripts you can drop into your own games. Open a 3D pack to turn it in the inspector before you buy.</p>
+    </div>
+    <aside class="rounded-xl border bg-card p-6 squircle" data-reveal>
+      <h2 class="m-0 font-display text-2xl font-extrabold uppercase tracking-wide">How buying works</h2>
+      <p class="m-0 mt-2 text-sm text-muted-foreground">Each pack goes on sale when it's finished. Buy it here through a secure checkout page, or on itch.io, Fab or the Roblox Creator Store. The store you pick takes the payment and hands you the download. Every price is one-time. <a href={href("refunds")} class="text-primary hover:underline">Refund policy</a></p>
+    </aside>
+  </section>
+  <section class="wrap" aria-label="Store items">
+    <Browser client:load cards={cards} filters={cats} filterBy="category" sortable noun={["pack", "packs"]} />
+  </section>
+</Base>

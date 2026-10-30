@@ -1,0 +1,100 @@
+---
+import { ClientRouter } from "astro:transitions";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import "@/styles/global.css";
+
+interface Props {
+  title?: string;
+  description: string;
+  /** Let a full-bleed hero run under a transparent header */
+  overlayHeader?: boolean;
+}
+const { title, description, overlayHeader = false } = Astro.props;
+const fullTitle = title ? `${title} | Iron Lantern Studios` : "Iron Lantern Studios";
+const icon = "data:image/svg+xml," + encodeURIComponent(
+  `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='#061212'/><path d='M16 3v3M10 8h12l-2 3H12zM11 12h10v13H11zM9 27h14' fill='none' stroke='#e8f2ef' stroke-width='1.8' stroke-linejoin='round'/><path d='M16 15c2.2 2 2.2 4.2 0 6.2-2.2-2-2.2-4.2 0-6.2z' fill='#7ad3b8'/></svg>`
+);
+---
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#061212" />
+    <link rel="icon" href={icon} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <script is:inline>document.documentElement.classList.replace("no-js", "js");</script>
+    <ClientRouter fallback="swap" />
+  </head>
+  <body class="min-h-svh">
+    <a href="#main" class="sr-only z-50 rounded-lg bg-primary px-4 py-2 font-semibold text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-3">Skip to content</a>
+    <Header overlay={overlayHeader} />
+    <main id="main" class:list={[overlayHeader && "-mt-16"]}>
+      <slot />
+    </main>
+    <Footer />
+
+    <style is:global>
+      .js [data-reveal] { opacity: 0; transform: translateY(24px); }
+      @media (prefers-reduced-motion: reduce) { .js [data-reveal] { opacity: 1; transform: none; } }
+    </style>
+    <script>
+      import Lenis from "lenis";
+      import { animate, inView } from "motion";
+
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const spring = { type: "spring", stiffness: 260, damping: 20 } as const;
+
+      // Smooth scrolling, created once and kept across page swaps
+      const w = window as any;
+      if (!reduced && !w.__lenis) {
+        w.__lenis = new Lenis({ lerp: 0.11, wheelMultiplier: 0.95 });
+        const raf = (t: number) => { w.__lenis.raf(t); requestAnimationFrame(raf); };
+        requestAnimationFrame(raf);
+      }
+
+      function setup() {
+        w.__lenis?.scrollTo(0, { immediate: true });
+        w.__lenis?.start();
+        // Sections rise in on a spring when they reach the screen
+        document.querySelectorAll<HTMLElement>("[data-reveal]").forEach(el => {
+          if (reduced) return;
+          inView(el, () => { animate(el, { opacity: 1, transform: "translateY(0px)" }, spring); }, { margin: "0px 0px -10% 0px" });
+        });
+        // Numbers count up on a spring
+        document.querySelectorAll<HTMLElement>("[data-count]").forEach(el => {
+          const n = Number(el.dataset.count);
+          if (reduced) { el.textContent = String(n); return; }
+          el.textContent = "0";
+          inView(el, () => { animate(0, n, { ...spring, damping: 26, onUpdate: v => { el.textContent = String(Math.max(0, Math.round(v))); } }); });
+        });
+        // Headline words rise out of their own line
+        document.querySelectorAll<HTMLElement>("[data-words]").forEach(h => {
+          if (reduced || h.dataset.split) return;
+          h.dataset.split = "1";
+          const words = (h.textContent || "").trim().split(/\s+/);
+          h.setAttribute("aria-label", words.join(" "));
+          h.replaceChildren(...words.flatMap((wd, i) => {
+            const outer = document.createElement("span"), inner = document.createElement("span");
+            outer.setAttribute("aria-hidden", "true");
+            outer.style.cssText = "display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.06em;margin-bottom:-.06em";
+            inner.style.cssText = "display:inline-block;transform:translateY(105%)";
+            inner.textContent = wd;
+            outer.append(inner);
+            return i ? [document.createTextNode(" "), outer] : [outer];
+          }));
+          h.querySelectorAll<HTMLElement>("span > span").forEach((s, i) => {
+            animate(s, { transform: "translateY(0%)" }, { ...spring, delay: 0.06 + i * 0.07 });
+          });
+        });
+      }
+      document.addEventListener("astro:page-load", setup);
+    </script>
+  </body>
+</html>

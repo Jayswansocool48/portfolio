@@ -1,0 +1,50 @@
+---
+import CommandMenu from "./CommandMenu";
+import MobileMenu from "./MobileMenu";
+import { LanternMark } from "./Cover";
+import { href } from "@/lib/utils";
+import { GAMES, ASSETS } from "@/data/catalog";
+import { itemHref } from "@/lib/media";
+
+const links = [
+  { href: href("games"), label: "Games" },
+  { href: href("store"), label: "Store" },
+  { href: href("about"), label: "About" },
+  { href: href("contact"), label: "Contact" },
+];
+const path = Astro.url.pathname.replace(/\/$/, "");
+const current = links.find(l => path === l.href || path.startsWith(l.href + "/"))?.href ?? "";
+const search = [
+  ...[{ href: href(""), label: "Home" }, ...links,
+     { href: href("refunds"), label: "Refund policy" }, { href: href("privacy"), label: "Privacy" }, { href: href("terms"), label: "Terms" }]
+    .map(l => ({ ...l, group: "Pages" })),
+  ...GAMES.map(g => ({ label: g.name, href: itemHref(g), group: "Games", keywords: g.tags.join(" ") + " " + g.summary })),
+  ...ASSETS.map(a => ({ label: a.name, href: itemHref(a), group: "Store", keywords: a.tags.join(" ") + " " + a.summary })),
+];
+const { overlay = false } = Astro.props;
+---
+<header
+  class:list={[
+    "sticky top-0 z-40 border-b",
+    overlay ? "border-transparent bg-gradient-to-b from-background/90 to-transparent" : "bg-background/85 backdrop-blur-md",
+  ]}
+  style="view-transition-name: site-header"
+>
+  <div class="wrap flex min-h-16 items-center gap-4">
+    <a href={href("")} class="mr-auto inline-flex min-h-11 items-center gap-2.5" aria-label="Iron Lantern Studios home">
+      <LanternMark className="size-7 text-foreground" />
+      <span class="font-display text-[1.35rem] font-extrabold uppercase leading-none tracking-wide">Iron Lantern<span class="hidden font-semibold text-muted-foreground sm:inline"> Studios</span></span>
+    </a>
+    <nav aria-label="Pages" class="hidden items-center md:flex">
+      {links.map(l => (
+        <a
+          href={l.href}
+          aria-current={current === l.href ? "page" : undefined}
+          class="relative inline-flex min-h-11 items-center px-3 text-[0.95rem] text-muted-foreground hover:text-foreground aria-[current=page]:text-foreground after:absolute after:inset-x-3 after:bottom-2 after:h-0.5 after:rounded-full after:bg-primary after:opacity-0 aria-[current=page]:after:opacity-100"
+        >{l.label}</a>
+      ))}
+    </nav>
+    <CommandMenu client:idle items={search} />
+    <MobileMenu client:media="(max-width: 767px)" links={links} current={current} />
+  </div>
+</header>
