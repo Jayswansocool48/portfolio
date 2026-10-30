@@ -100,7 +100,7 @@ const backHref = href(item.kind === "game" ? "games" : "store");
               {o.store === "site" && <span class="font-mono text-[0.7rem] text-muted-foreground">{STUDIO.checkoutProvider ? `Secure checkout by ${STUDIO.checkoutProvider}` : "Secure checkout page"}</span>}
             </span>
             {o.url ? (
-              <a href={o.url} rel="noopener" class:list={["inline-flex min-h-11 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold squircle", o === primary ? "bg-primary text-primary-foreground" : "border hover:border-primary/60"]}>
+              <a href={o.url} rel="noopener" class:list={["inline-flex min-h-11 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold squircle", o === primary ? "bg-primary text-primary-foreground" : "border hover:border-primary-text/60"]}>
                 {o.store === "site" ? "Buy here" : "Open"}{o.price && <span class="num">· {o.price}</span>}
               </a>
             ) : (
@@ -112,7 +112,7 @@ const backHref = href(item.kind === "game" ? "games" : "store");
       {item.get.some(o => o.store === "site") && (
         <p class="m-0 mt-3 inline-flex items-start gap-2 text-sm text-muted-foreground">
           <Storefront size={16} class="mt-0.5 shrink-0" aria-hidden />
-          <span>One-time price, tax shown before you pay. <a href={href("refunds")} class="text-primary hover:underline">Refund policy</a></span>
+          <span>One-time price, tax shown before you pay. <a href={href("refunds")} class="text-primary-text hover:underline">Refund policy</a></span>
         </p>
       )}
     </section>

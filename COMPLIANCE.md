@@ -17,7 +17,7 @@ Status for the Iron Lantern Studios site. "N/A" means the site has nothing the r
 | 11 | Remove fake reviews | Done: no reviews, ratings or testimonials. |
 | 12 | Remove unsupported claims | Done: every game and asset shows its real status; unreleased stores show as "Planned"; the About numbers count the catalog. |
 | 13 | Alt text for accessibility | Done: covers say "Cover art for" the name, title-card placeholders have labels, the 3D views describe the model and controls, and `catalog.ts` takes alt text for every screenshot. |
-| 14 | Fix color contrast | Done on the background: body text 17.3:1, muted text 9.2:1, accent 10.5:1, error text 7.1:1, button text 10.2:1. |
+| 14 | Fix color contrast | Done on the background: body text 15.3:1, muted text 6.6:1, red text and links 5.4:1, button text on crimson 5.0:1. Crimson fills and focus rings clear the 3:1 non-text minimum. |
 | 15 | Full keyboard navigation | Done: skip link, visible focus ring on every control, Ctrl+K search with arrow keys, arrow keys in filter chips, the Now building carousel and a focused 3D view, Esc closes search and the phone menu. |
 | 16 | Add business details | Done: studio name in every footer, email and Discord on the Contact page. |
 | 17 | Age consent for kids' data | N/A: the site collects no data from anyone. |

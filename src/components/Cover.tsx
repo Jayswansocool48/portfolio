@@ -27,7 +27,7 @@ export default function Cover({
           <div
             aria-hidden
             className="absolute inset-0 opacity-60"
-            style={{ background: "linear-gradient(to top, hsl(180 60% 2% / 0.8), transparent 65%)" }}
+            style={{ background: "linear-gradient(to top, rgb(8 8 10 / 0.82), transparent 65%)" }}
           />
           <LanternMark className="absolute right-5 top-5 size-7 text-foreground/50" />
           <span aria-hidden className={cn(

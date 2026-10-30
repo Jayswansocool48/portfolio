@@ -32,7 +32,7 @@ const assets = ASSETS.filter(a => a.featured).slice(0, 2).map(toCard);
       </p>
       <div class="pointer-events-auto mt-8 flex flex-wrap items-center gap-5" data-reveal>
         <a href={href("games")} class="inline-flex min-h-12 items-center rounded-lg bg-primary px-6 font-semibold text-primary-foreground hover:brightness-110 squircle">Explore the games</a>
-        <a href={href("store")} class="inline-flex min-h-11 items-center text-[0.95rem] font-semibold text-foreground underline decoration-primary/60 underline-offset-[6px] hover:decoration-primary">Browse the asset store</a>
+        <a href={href("store")} class="inline-flex min-h-11 items-center text-[0.95rem] font-semibold text-foreground underline decoration-primary-text/60 underline-offset-[6px] hover:decoration-primary-text">Browse the asset store</a>
       </div>
     </div>
   </section>
@@ -51,7 +51,7 @@ const assets = ASSETS.filter(a => a.featured).slice(0, 2).map(toCard);
   <section class="wrap pt-24" aria-labelledby="games-title">
     <div class="mb-6 flex items-end justify-between gap-4" data-reveal>
       <h2 id="games-title" class="m-0 font-display text-5xl font-extrabold uppercase tracking-wide">Games</h2>
-      <a href={href("games")} class="inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:underline">All games</a>
+      <a href={href("games")} class="inline-flex min-h-11 items-center text-sm font-semibold text-primary-text hover:underline">All games</a>
     </div>
     <CardGrid client:visible cards={games} />
   </section>
@@ -62,7 +62,7 @@ const assets = ASSETS.filter(a => a.featured).slice(0, 2).map(toCard);
         <h2 id="assets-title" class="m-0 font-display text-5xl font-extrabold uppercase tracking-wide">From the store</h2>
         <p class="m-0 mt-2 max-w-[48ch] text-muted-foreground">Low-poly models, UI kits and scripts for your own games. Open one to turn it in 3D.</p>
       </div>
-      <a href={href("store")} class="inline-flex min-h-11 shrink-0 items-center text-sm font-semibold text-primary hover:underline">Visit the store</a>
+      <a href={href("store")} class="inline-flex min-h-11 shrink-0 items-center text-sm font-semibold text-primary-text hover:underline">Visit the store</a>
     </div>
     <CardGrid client:visible cards={assets} />
   </section>

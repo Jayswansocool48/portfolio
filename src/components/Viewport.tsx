@@ -69,7 +69,7 @@ export default function Viewport({ scene = "lantern", model, label, zoom, framin
             className={cn(
               "relative min-h-8 min-w-11 rounded-md border px-2.5 font-mono text-[0.7rem] uppercase tracking-wider squircle",
               "after:absolute after:-inset-1.5 after:content-['']",
-              on ? "border-primary/60 bg-secondary text-primary" : "border-border text-muted-foreground hover:text-foreground",
+              on ? "border-primary-text/60 bg-secondary text-primary-text" : "border-border text-muted-foreground hover:text-foreground",
             )}
           >
             {k === "psx" ? "PSX" : "Wire"}
@@ -80,7 +80,7 @@ export default function Viewport({ scene = "lantern", model, label, zoom, framin
   );
 
   const hud = (
-    <dl className={cn("pointer-events-none absolute z-[2] m-0 grid gap-0.5 font-mono text-[0.68rem] leading-snug text-primary num", hero ? "right-5 top-24 sm:right-8" : "left-3 top-3")}>
+    <dl className={cn("pointer-events-none absolute z-[2] m-0 grid gap-0.5 font-mono text-[0.68rem] leading-snug text-primary-text num", hero ? "right-5 top-24 sm:right-8" : "left-3 top-3")}>
       {stats && (
         <>
           <div className="flex gap-2"><dt className="w-11 text-muted-foreground">Tris</dt><dd>{stats.tris}</dd></div>

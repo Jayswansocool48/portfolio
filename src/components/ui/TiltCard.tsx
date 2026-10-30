@@ -34,7 +34,7 @@ export function TiltCard({
   const s = useSpring(useTransform(hover, v => (reduce ? 1 : 1 + (scale - 1) * v)), springs.micro);
   const glow = useSpring(hover, springs.micro);
   const gx = useTransform(px, v => `${v * 100}%`), gy = useTransform(py, v => `${v * 100}%`);
-  const bg = useMotionTemplate`radial-gradient(420px circle at ${gx} ${gy}, hsl(164 52% 62% / 0.12), transparent 60%)`;
+  const bg = useMotionTemplate`radial-gradient(420px circle at ${gx} ${gy}, rgb(240 86 107 / 0.10), transparent 60%)`;
 
   return (
     <motion.div

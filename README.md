@@ -34,7 +34,7 @@ On Cloudflare Pages or Vercel, use `npm run build` with output folder `dist` and
 
 ## Design
 
-- **Theme:** "Emerald Dark" by ndlprecieux on 21st.dev, dark variant. The teal-black neutrals and crimson come from the theme; its neon primary is toned down to a phosphor green. Tokens live in `src/styles/global.css`.
+- **Theme:** "Red Dark" by kartman.sms on 21st.dev, dark variant: cool slate-charcoal surfaces with a blood-crimson accent. The crimson is split into a deep fill shade for buttons and a lighter shade for text, so both pass WCAG AA. Tokens live in `src/styles/global.css`.
 - **Components:** the tilting cards adapt "Tilt Card" by tom_ui on 21st.dev. Search uses cmdk, the library behind shadcn/ui's Command. Icons are Phosphor.
 - **Fonts:** Big Shoulders Display, Plus Jakarta Sans and Fira Code, self-hosted through Fontsource (SIL OFL 1.1).
 - **Motion:** every animation is a spring, with presets in `src/lib/springs.ts`. Reduced-motion settings turn them off.

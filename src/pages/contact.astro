@@ -16,7 +16,7 @@ const socials = Object.entries(STUDIO.socials).filter(([, u]) => u);
       <dl class="m-0 border-t">
         <div class="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 border-b py-4">
           <dt class="eyebrow col-span-2 text-muted-foreground">Email</dt>
-          <dd class="m-0 min-w-0 break-all font-semibold"><a href={`mailto:${STUDIO.email}`} class="hover:text-primary">{STUDIO.email}</a></dd>
+          <dd class="m-0 min-w-0 break-all font-semibold"><a href={`mailto:${STUDIO.email}`} class="hover:text-primary-text">{STUDIO.email}</a></dd>
           <CopyButton client:visible value={STUDIO.email} label="email address" />
         </div>
         <div class="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 border-b py-4">
@@ -29,7 +29,7 @@ const socials = Object.entries(STUDIO.socials).filter(([, u]) => u);
         <div class="mt-8">
           <p class="eyebrow m-0 text-muted-foreground">Elsewhere</p>
           <ul class="m-0 mt-2 list-none p-0">
-            {socials.map(([k, u]) => <li><a href={u} rel="noopener me" class="inline-flex min-h-11 items-center hover:text-primary">{SOCIAL_NAMES[k] || k}</a></li>)}
+            {socials.map(([k, u]) => <li><a href={u} rel="noopener me" class="inline-flex min-h-11 items-center hover:text-primary-text">{SOCIAL_NAMES[k] || k}</a></li>)}
           </ul>
         </div>
       )}

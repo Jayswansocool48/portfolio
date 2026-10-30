@@ -13,7 +13,7 @@ interface Props {
 const { title, description, overlayHeader = false } = Astro.props;
 const fullTitle = title ? `${title} | Iron Lantern Studios` : "Iron Lantern Studios";
 const icon = "data:image/svg+xml," + encodeURIComponent(
-  `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='#061212'/><path d='M16 3v3M10 8h12l-2 3H12zM11 12h10v13H11zM9 27h14' fill='none' stroke='#e8f2ef' stroke-width='1.8' stroke-linejoin='round'/><path d='M16 15c2.2 2 2.2 4.2 0 6.2-2.2-2-2.2-4.2 0-6.2z' fill='#7ad3b8'/></svg>`
+  `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='#15161a'/><path d='M16 3v3M10 8h12l-2 3H12zM11 12h10v13H11zM9 27h14' fill='none' stroke='#ececee' stroke-width='1.8' stroke-linejoin='round'/><path d='M16 15c2.2 2 2.2 4.2 0 6.2-2.2-2-2.2-4.2 0-6.2z' fill='#e0364f'/></svg>`
 );
 ---
 <!doctype html>
@@ -25,7 +25,7 @@ const icon = "data:image/svg+xml," + encodeURIComponent(
     <meta name="description" content={description} />
     <meta name="robots" content="noindex, nofollow" />
     <meta name="color-scheme" content="dark" />
-    <meta name="theme-color" content="#061212" />
+    <meta name="theme-color" content="#15161a" />
     <link rel="icon" href={icon} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
