@@ -1,26 +1,52 @@
 # portfolio
 
-The Iron Lantern Studios website. Plain HTML, CSS and JavaScript with no build step.
+The Iron Lantern Studios website: games, a 3D asset store, and how to get in touch. Built with Astro, Tailwind CSS and React islands, with Three.js for the PSX-style 3D views.
 
-Pages: `index.html` (home), `games.html`, `store.html`, `about.html`, `contact.html`, plus `privacy.html`, `terms.html` and `refunds.html`. Each page carries its own copy of the header and footer, so change the nav in every page if you add one.
+## Run it
 
-## Add or change a game or asset
+You need Node 20 or newer.
 
-Edit `projects.js`. `GAMES` and `ASSETS` hold every entry, and the comments above each list explain the fields. Set `show: false` to hide one. Put covers, screenshots and trailers in `media/`. A game's `cover` and `trailer` fields point at those files, and a placeholder shows until each file exists.
+```sh
+npm install
+npm run dev       # http://localhost:4321
+npm run build     # static site in dist/
+```
 
-Each game and asset has a `get` list of where people can buy or play it: `site` (your own checkout), `steam`, `itch`, `google-play`, `app-store`, `browser`, `roblox`, `roblox-store`, `fab` or `unity-store`. Paste the store page into `url` and the button goes live; an empty `url` shows "Coming soon". Add `price` to show it on the button.
+## Change the content
 
-For `site`, paste the hosted checkout link from your payment provider (a Lemon Squeezy product link or a Stripe Payment Link, say) and put the provider's name in `STUDIO.checkoutProvider`.
+Everything the site shows lives in `src/data/catalog.ts`: your contact details, every game and every asset. Each page builds from that file.
 
-Your email, Discord and social links sit in `STUDIO` at the top of the same file. Social links stay hidden until you fill them in.
+- **Covers, screenshots and trailers** go in `public/media/`. Point a game's `cover` or `trailer` at the file. Until the file exists, the site shows a title-card cover in the game's tint.
+- **Where to buy or play** is each entry's `get` list. Paste the store page into `url` and that store becomes a live button; the first live one becomes the page's main button. Empty `url`s show as "Planned".
+- **Your own checkout:** paste a hosted checkout link (Lemon Squeezy, Stripe Payment Links, or an itch.io page) into a `site` entry, and put the provider's name in `STUDIO.checkoutProvider`.
+- **3D models:** export a `.glb` from Blender into `public/media/` and set the asset's `model`. The asset page opens it in the 3D inspector with the PSX look. `standIn` shows a built-in low-poly stand-in until then.
 
-## Preview
+## Publish
 
-Run `python3 -m http.server` in this folder and open `localhost:8000`. Opening `index.html` straight from disk blocks the fonts.
+Pushing never publishes. To put the site on GitHub Pages:
 
-## Go live
+1. In the repo, open Settings > Pages and set Source to **GitHub Actions**.
+2. Open Actions > **Deploy** > **Run workflow**.
 
-1. Finish `COMPLIANCE.md`.
-2. Make the repo public.
-3. Turn on GitHub Pages: Settings > Pages > Deploy from branch > `main`, root.
-4. Remove the `noindex` meta tag from each page when you want search engines to list the site.
+The site then lives at `https://jayswansocool48.github.io/portfolio/`. Remove `<meta name="robots" content="noindex, nofollow">` from `src/layouts/Base.astro` when you want search engines to list it.
+
+On Cloudflare Pages or Vercel, use `npm run build` with output folder `dist` and leave `BASE_PATH` unset.
+
+## Design
+
+- **Theme:** "Emerald Dark" by ndlprecieux on 21st.dev, dark variant. The teal-black neutrals and crimson come from the theme; its neon primary is toned down to a phosphor green. Tokens live in `src/styles/global.css`.
+- **Components:** the tilting cards adapt "Tilt Card" by tom_ui on 21st.dev. Search uses cmdk, the library behind shadcn/ui's Command. Icons are Phosphor.
+- **Fonts:** Big Shoulders Display, Plus Jakarta Sans and Fira Code, self-hosted through Fontsource (SIL OFL 1.1).
+- **Motion:** every animation is a spring, with presets in `src/lib/springs.ts`. Reduced-motion settings turn them off.
+
+## Layout
+
+```
+src/
+  data/catalog.ts       games, assets, stores, contact details
+  pages/                one file per page; games/[id] and store/[id] build a page per entry
+  components/           Astro and React pieces (Viewport, NowBuilding, Browser, CommandMenu, ...)
+  lib/psx.js            the PS1-style Three.js renderer
+  styles/global.css     theme tokens and base styles
+public/media/           covers, screenshots, trailers, models
+```

@@ -1,0 +1,79 @@
+---
+import Base from "@/layouts/Base.astro";
+import Viewport from "@/components/Viewport";
+import NowBuilding from "@/components/NowBuilding";
+import CardGrid from "@/components/CardGrid";
+import { GAMES, ASSETS } from "@/data/catalog";
+import { toCard } from "@/lib/cards";
+import { itemHref, media } from "@/lib/media";
+import { href } from "@/lib/utils";
+
+const slides = GAMES.filter(g => g.current).map(g => {
+  const trailer = g.trailer && media(g.trailer.src);
+  return {
+    id: g.id, name: g.name, href: itemHref(g), tag: g.tags[0], status: g.status, caption: g.caption,
+    coverUrl: media(g.cover), tint: g.tint,
+    trailer: trailer ? { src: trailer, poster: media(g.trailer!.poster) } : null,
+  };
+});
+const games = GAMES.filter(g => g.featured).slice(0, 4).map(toCard);
+const assets = ASSETS.filter(a => a.featured).slice(0, 2).map(toCard);
+---
+<Base description="Iron Lantern Studios makes low-poly horror games and the 3D assets that go into them." overlayHeader>
+  <section class="relative isolate min-h-[max(40rem,100svh)] overflow-hidden" aria-labelledby="hero-title">
+    <Viewport client:only="react" framing="hero" scene="lantern" label="iron-lantern.glb" />
+    <div aria-hidden class="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-background via-background/70 to-transparent md:via-background/40"></div>
+    <div aria-hidden class="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-40 bg-gradient-to-t from-background to-transparent"></div>
+    <div class="wrap pointer-events-none relative z-[2] flex min-h-[max(40rem,100svh)] flex-col justify-end pb-[max(5rem,12vh)] pt-28">
+      <p class="eyebrow m-0" data-reveal>Game developer and 3D artist</p>
+      <h1 id="hero-title" data-words class="m-0 mt-4 max-w-[9ch] font-display text-[clamp(3.6rem,11vw,9.5rem)] font-black uppercase leading-[0.82] tracking-wide">Iron Lantern Studios</h1>
+      <p class="m-0 mt-6 max-w-[38ch] text-lg text-muted-foreground sm:text-xl" data-reveal>
+        I make low-poly horror games and the 3D assets that go into them. Grab the lantern and turn it.
+      </p>
+      <div class="pointer-events-auto mt-8 flex flex-wrap items-center gap-5" data-reveal>
+        <a href={href("games")} class="inline-flex min-h-12 items-center rounded-lg bg-primary px-6 font-semibold text-primary-foreground hover:brightness-110 squircle">Explore the games</a>
+        <a href={href("store")} class="inline-flex min-h-11 items-center text-[0.95rem] font-semibold text-foreground underline decoration-primary/60 underline-offset-[6px] hover:decoration-primary">Browse the asset store</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap pt-20" aria-labelledby="now-title" data-reveal>
+    <div class="mb-6 flex items-end justify-between gap-4">
+      <div>
+        <p class="eyebrow m-0">Current projects</p>
+        <h2 id="now-title" class="m-0 mt-2 font-display text-5xl font-extrabold uppercase tracking-wide">Now building</h2>
+      </div>
+      <p class="m-0 font-mono text-xs text-muted-foreground num">{slides.length} in progress</p>
+    </div>
+    <NowBuilding client:visible slides={slides} />
+  </section>
+
+  <section class="wrap pt-24" aria-labelledby="games-title">
+    <div class="mb-6 flex items-end justify-between gap-4" data-reveal>
+      <h2 id="games-title" class="m-0 font-display text-5xl font-extrabold uppercase tracking-wide">Games</h2>
+      <a href={href("games")} class="inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:underline">All games</a>
+    </div>
+    <CardGrid client:visible cards={games} />
+  </section>
+
+  <section class="wrap pt-24" aria-labelledby="assets-title">
+    <div class="mb-6 flex items-end justify-between gap-4" data-reveal>
+      <div>
+        <h2 id="assets-title" class="m-0 font-display text-5xl font-extrabold uppercase tracking-wide">From the store</h2>
+        <p class="m-0 mt-2 max-w-[48ch] text-muted-foreground">Low-poly models, UI kits and scripts for your own games. Open one to turn it in 3D.</p>
+      </div>
+      <a href={href("store")} class="inline-flex min-h-11 shrink-0 items-center text-sm font-semibold text-primary hover:underline">Visit the store</a>
+    </div>
+    <CardGrid client:visible cards={assets} />
+  </section>
+
+  <section class="wrap pt-24" data-reveal>
+    <div class="grid gap-6 rounded-xl border bg-card p-8 squircle sm:p-12 md:grid-cols-[1.4fr_1fr] md:items-end">
+      <div>
+        <h2 class="m-0 font-display text-[clamp(2.4rem,5vw,3.6rem)] font-extrabold uppercase leading-[0.9] tracking-wide">Need a custom asset or a hand on your game?</h2>
+        <p class="m-0 mt-4 max-w-[46ch] text-muted-foreground">Tell me what you're making. I usually reply within two days.</p>
+      </div>
+      <a href={href("contact")} class="inline-flex min-h-12 items-center justify-center rounded-lg bg-primary px-6 font-semibold text-primary-foreground hover:brightness-110 squircle md:justify-self-end">Get in touch</a>
+    </div>
+  </section>
+</Base>

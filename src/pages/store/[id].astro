@@ -1,0 +1,13 @@
+---
+import Base from "@/layouts/Base.astro";
+import ProductPage from "@/components/ProductPage.astro";
+import { ASSETS } from "@/data/catalog";
+
+export function getStaticPaths() {
+  return ASSETS.map(a => ({ params: { id: a.id }, props: { item: a } }));
+}
+const { item } = Astro.props;
+---
+<Base title={item.name} description={item.summary} overlayHeader>
+  <ProductPage item={item} />
+</Base>

@@ -1,0 +1,127 @@
+---
+// One page per game or asset: a full-bleed hero with a single call to action, then the details.
+import Viewport from "./Viewport";
+import Cover from "./Cover";
+import CardGrid from "./CardGrid";
+import { ArrowUpRight, Storefront } from "@phosphor-icons/react/dist/ssr";
+import { CATEGORIES, ITEMS, STUDIO, type Item } from "@/data/catalog";
+import { media, offers } from "@/lib/media";
+import { toCard } from "@/lib/cards";
+import { href } from "@/lib/utils";
+
+interface Props { item: Item }
+const { item } = Astro.props;
+const { live, planned } = offers(item);
+const primary = live[0];
+const coverUrl = media(item.cover) ?? media(item.images?.[0]?.src);
+const model = item.kind === "asset" ? media(item.model) : null;
+const show3d = item.kind === "asset" && (model || item.standIn);
+const trailer = item.kind === "game" && item.trailer ? media(item.trailer.src) : null;
+const shots = (item.images || []).map(s => ({ ...s, url: media(s.src) })).filter(s => s.url && s.src !== item.cover);
+const facts: [string, string][] = item.kind === "game"
+  ? [["Status", item.status], ["Platforms", item.platforms.join(", ")], ["Genre", item.tags.join(", ")]]
+  : [["Status", item.status], ["Type", CATEGORIES[item.category]], ["Works with", item.engine], ["Tags", item.tags.join(", ")]];
+const listJoin = (a: string[]) => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
+const more = ITEMS.filter(i => i.kind === item.kind && i.id !== item.id).slice(0, 2).map(toCard);
+const backHref = href(item.kind === "game" ? "games" : "store");
+---
+<section class="relative isolate overflow-hidden border-b" aria-labelledby="product-title">
+  <div class="absolute inset-0 -z-10">
+    <Cover name={item.name} url={coverUrl} tint={item.tint} id={item.id} size="hero" bare />
+  </div>
+  <div aria-hidden class="absolute inset-0 -z-10 bg-gradient-to-t from-background via-background/75 to-background/20"></div>
+  <div class="wrap grid min-h-[min(78svh,46rem)] items-end gap-10 pb-12 pt-32 lg:grid-cols-[1fr_1.1fr]">
+    <div class="min-w-0">
+      <a href={backHref} class="inline-flex min-h-11 items-center font-mono text-xs text-muted-foreground hover:text-foreground">
+        ← {item.kind === "game" ? "All games" : "Asset store"}
+      </a>
+      <p class="eyebrow m-0 mt-3">{item.kind === "game" ? item.tags[0] : CATEGORIES[item.category]} · {item.status}</p>
+      <h1 id="product-title" data-words class="m-0 mt-3 font-display text-[clamp(3.4rem,9vw,7.5rem)] font-black uppercase leading-[0.85] tracking-wide">{item.name}</h1>
+      <p class="m-0 mt-5 max-w-[40ch] text-lg text-muted-foreground" data-reveal>{item.summary}</p>
+      <div class="mt-8 flex flex-wrap items-center gap-4" data-reveal>
+        {primary ? (
+          <a href={primary.url} rel="noopener" class="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary px-6 font-semibold text-primary-foreground hover:brightness-110 squircle">
+            {primary.text}{primary.price && <span class="num">· {primary.price}</span>}
+            <ArrowUpRight size={18} weight="bold" aria-hidden />
+          </a>
+        ) : (
+          <a href={href("contact")} class="inline-flex min-h-12 items-center rounded-lg bg-primary px-6 font-semibold text-primary-foreground hover:brightness-110 squircle">Ask about the release</a>
+        )}
+        {!primary && planned.length > 0 && (
+          <p class="m-0 text-sm text-muted-foreground">Planned for {listJoin(planned.map(o => o.name === "This site" ? "this site" : o.name))}.</p>
+        )}
+      </div>
+    </div>
+    {show3d && (
+      <div class="min-w-0" data-reveal>
+        <Viewport client:only="react" scene={item.kind === "asset" ? item.standIn : undefined} model={model || undefined} label={model ? undefined : `${item.name} (stand-in)`} zoom />
+        {!model && <p class="m-0 mt-2 font-mono text-[0.7rem] text-muted-foreground">A low-poly stand-in until the finished pack is exported.</p>}
+      </div>
+    )}
+  </div>
+</section>
+
+<div class="wrap grid gap-14 pt-16 lg:grid-cols-[1.5fr_1fr]">
+  <section aria-labelledby="about-title" data-reveal>
+    <h2 id="about-title" class="eyebrow m-0">About {item.kind === "game" ? "the game" : "the pack"}</h2>
+    <div class="mt-4 grid max-w-[62ch] gap-4 text-lg leading-relaxed">
+      {item.about.map(p => <p class="m-0">{p}</p>)}
+    </div>
+    {trailer && (
+      <div class="scanlines mt-10 overflow-hidden rounded-xl border squircle">
+        <video src={trailer} poster={media(item.kind === "game" ? item.trailer?.poster : undefined) || undefined} controls playsinline preload="metadata" class="block aspect-video w-full bg-card" />
+      </div>
+    )}
+    {shots.length > 0 && (
+      <div class="mt-10 grid gap-3 sm:grid-cols-2">
+        {shots.map(s => <img src={s.url} alt={s.alt} loading="lazy" decoding="async" class="aspect-video w-full rounded-lg border object-cover" />)}
+      </div>
+    )}
+  </section>
+
+  <aside class="grid content-start gap-10" data-reveal>
+    <section aria-labelledby="facts-title">
+      <h2 id="facts-title" class="eyebrow m-0">Details</h2>
+      <dl class="m-0 mt-4 border-t">
+        {facts.map(([k, v]) => (
+          <div class="grid grid-cols-[7rem_1fr] gap-3 border-b py-3 text-sm">
+            <dt class="text-muted-foreground">{k}</dt><dd class="m-0">{v}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+    <section aria-labelledby="get-title">
+      <h2 id="get-title" class="eyebrow m-0">Where to get it</h2>
+      <ul class="m-0 mt-4 list-none border-t p-0">
+        {[...live, ...planned].map(o => (
+          <li class="flex min-h-16 items-center justify-between gap-4 border-b py-2">
+            <span class="grid">
+              <span class="font-semibold">{o.name}</span>
+              {o.store === "site" && <span class="font-mono text-[0.7rem] text-muted-foreground">{STUDIO.checkoutProvider ? `Secure checkout by ${STUDIO.checkoutProvider}` : "Secure checkout page"}</span>}
+            </span>
+            {o.url ? (
+              <a href={o.url} rel="noopener" class:list={["inline-flex min-h-11 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold squircle", o === primary ? "bg-primary text-primary-foreground" : "border hover:border-primary/60"]}>
+                {o.store === "site" ? "Buy here" : "Open"}{o.price && <span class="num">· {o.price}</span>}
+              </a>
+            ) : (
+              <span class="font-mono text-xs text-muted-foreground">Planned</span>
+            )}
+          </li>
+        ))}
+      </ul>
+      {item.get.some(o => o.store === "site") && (
+        <p class="m-0 mt-3 inline-flex items-start gap-2 text-sm text-muted-foreground">
+          <Storefront size={16} class="mt-0.5 shrink-0" aria-hidden />
+          <span>One-time price, tax shown before you pay. <a href={href("refunds")} class="text-primary hover:underline">Refund policy</a></span>
+        </p>
+      )}
+    </section>
+  </aside>
+</div>
+
+{more.length > 0 && (
+  <section class="wrap pt-24" aria-labelledby="more-title">
+    <h2 id="more-title" class="m-0 mb-6 font-display text-4xl font-extrabold uppercase tracking-wide" data-reveal>More {item.kind === "game" ? "games" : "from the store"}</h2>
+    <CardGrid client:visible cards={more} />
+  </section>
+)}

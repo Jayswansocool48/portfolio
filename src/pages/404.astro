@@ -1,0 +1,12 @@
+---
+import Base from "@/layouts/Base.astro";
+import { href } from "@/lib/utils";
+---
+<Base title="Lost" description="This page doesn't exist.">
+  <section class="wrap grid min-h-[60svh] content-center pt-20">
+    <p class="eyebrow m-0">Error 404</p>
+    <h1 class="m-0 mt-3 font-display text-[clamp(3.4rem,10vw,8rem)] font-black uppercase leading-[0.85] tracking-wide">The lights went out</h1>
+    <p class="m-0 mt-5 max-w-[44ch] text-lg text-muted-foreground">Nothing lives at this address. The page may have moved when the site was rebuilt.</p>
+    <a href={href("")} class="mt-8 inline-flex min-h-12 w-fit items-center rounded-lg bg-primary px-6 font-semibold text-primary-foreground hover:brightness-110 squircle">Back to the start</a>
+  </section>
+</Base>

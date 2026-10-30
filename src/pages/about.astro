@@ -1,0 +1,85 @@
+---
+import Base from "@/layouts/Base.astro";
+import { GAMES, ASSETS, STUDIO } from "@/data/catalog";
+import { href } from "@/lib/utils";
+
+const years = new Date().getFullYear() - STUDIO.since;
+const stats: [number, string][] = [
+  [years, years === 1 ? "year making games" : "years making games"],
+  [GAMES.length, GAMES.length === 1 ? "game in development" : "games in development"],
+  [ASSETS.length, ASSETS.length === 1 ? "asset pack in progress" : "asset packs in progress"],
+  [3, "engines I build in"],
+];
+const timeline = [
+  ["2020", "First steps", "I started in Roblox Studio and left a trail of unfinished projects behind me."],
+  ["2021", "Learning to code", "I picked up Lua and Python and learned how program logic fits together."],
+  ["2023", "Reset", "I stepped away from code for a while and came back wanting it more."],
+  ["2024", "Web design", "I learned HTML and CSS through Codecademy and built my first small site."],
+  ["2025", "Crazy Taxi", "I started my first full game project and began modeling its city."],
+  ["2026", "After Hours", "I started a horror game and rebuilt this site from scratch."],
+];
+const toolkit = [
+  ["Engines", "Unity, Unreal Engine, Roblox Studio"],
+  ["Art", "Blender, low-poly modeling, texturing, UI design"],
+  ["Code", "Python, Lua, JavaScript, HTML and CSS, C++ (learning)"],
+  ["Design", "Game design, level design"],
+];
+---
+<Base title="About" description="Jason, the developer behind Iron Lantern Studios, and how the studio got here.">
+  <section class="wrap grid gap-12 pb-8 pt-20 lg:grid-cols-[1.4fr_1fr] lg:items-end">
+    <div>
+      <p class="eyebrow m-0" data-reveal>About</p>
+      <h1 data-words class="m-0 mt-3 font-display text-[clamp(3.4rem,9vw,7.5rem)] font-black uppercase leading-[0.85] tracking-wide">One person, one lantern</h1>
+      <div class="mt-6 grid max-w-[58ch] gap-4 text-lg text-muted-foreground" data-reveal>
+        <p class="m-0">I'm {STUDIO.owner}, a game developer and 3D artist. I've been making games and assets since {STUDIO.since}. Most days I'm in Unity or Blender, modeling props or tuning a level until it feels right.</p>
+        <p class="m-0">Iron Lantern Studios is the name I put on that work. It's just me for now.</p>
+      </div>
+    </div>
+    <dl class="m-0 grid grid-cols-2 border-t" data-reveal>
+      {stats.map(([n, l], i) => (
+        <div class:list={["border-b py-5", i % 2 === 0 && "pr-4"]}>
+          <dt class="font-display text-6xl font-black leading-none num" data-count={n}>{n}</dt>
+          <dd class="m-0 mt-1.5 text-sm text-muted-foreground">{l}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  <section class="wrap grid gap-14 pt-16 lg:grid-cols-[1.4fr_1fr]">
+    <div data-reveal>
+      <h2 class="eyebrow m-0">How I got here</h2>
+      <ol class="m-0 mt-4 list-none border-t p-0">
+        {timeline.map(([y, t, d]) => (
+          <li class="grid grid-cols-[4.5rem_1fr] gap-4 border-b py-5">
+            <span class="font-mono text-sm text-primary num">{y}</span>
+            <div>
+              <p class="m-0 font-display text-2xl font-extrabold uppercase tracking-wide">{t}</p>
+              <p class="m-0 mt-1 text-muted-foreground">{d}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+    <div data-reveal>
+      <h2 class="eyebrow m-0">Toolkit</h2>
+      <dl class="m-0 mt-4 border-t">
+        {toolkit.map(([k, v]) => (
+          <div class="border-b py-5">
+            <dt class="font-semibold">{k}</dt>
+            <dd class="m-0 mt-1 text-muted-foreground">{v}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="wrap pt-24" data-reveal>
+    <div class="grid gap-6 rounded-xl border bg-card p-8 squircle sm:p-12 md:grid-cols-[1.4fr_1fr] md:items-end">
+      <div>
+        <h2 class="m-0 font-display text-[clamp(2.4rem,5vw,3.6rem)] font-extrabold uppercase leading-[0.9] tracking-wide">Let's make something</h2>
+        <p class="m-0 mt-4 max-w-[46ch] text-muted-foreground">I take on custom assets and like teaming up on small games.</p>
+      </div>
+      <a href={href("contact")} class="inline-flex min-h-12 items-center justify-center rounded-lg bg-primary px-6 font-semibold text-primary-foreground hover:brightness-110 squircle md:justify-self-end">Get in touch</a>
+    </div>
+  </section>
+</Base>
