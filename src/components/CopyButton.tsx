@@ -23,7 +23,7 @@ export default function CopyButton({ value, label }: { value: string; label: str
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.span key={done || "idle"} className="inline-flex items-center gap-2" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={springs.micro}>
-          {done === "copied" ? <><Check size={15} weight="bold" className="text-primary" /> Copied</> : done === "select" ? "Ctrl+C" : <><Copy size={15} /> Copy</>}
+          {done === "copied" ? <><Check size={15} weight="bold" className="text-primary-text" /> Copied</> : done === "select" ? "Ctrl+C" : <><Copy size={15} /> Copy</>}
         </motion.span>
       </AnimatePresence>
     </button>

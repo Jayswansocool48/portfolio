@@ -13,19 +13,19 @@ const year = new Date().getFullYear();
     <nav aria-label="Site" class="flex flex-col">
       <p class="eyebrow m-0 mb-2 text-muted-foreground">Site</p>
       {[["games","Games"],["store","Store"],["about","About"],["contact","Contact"]].map(([p,l]) => (
-        <a href={href(p)} class="inline-flex min-h-10 items-center hover:text-primary">{l}</a>
+        <a href={href(p)} class="inline-flex min-h-10 items-center hover:text-primary-text">{l}</a>
       ))}
     </nav>
     <nav aria-label="Legal" class="flex flex-col">
       <p class="eyebrow m-0 mb-2 text-muted-foreground">Legal</p>
       {[["privacy","Privacy"],["terms","Terms"],["refunds","Refunds"]].map(([p,l]) => (
-        <a href={href(p)} class="inline-flex min-h-10 items-center hover:text-primary">{l}</a>
+        <a href={href(p)} class="inline-flex min-h-10 items-center hover:text-primary-text">{l}</a>
       ))}
     </nav>
     {socials.length > 0 && (
       <nav aria-label="Elsewhere" class="flex flex-col">
         <p class="eyebrow m-0 mb-2 text-muted-foreground">Elsewhere</p>
-        {socials.map(([k, u]) => <a href={u} rel="noopener me" class="inline-flex min-h-10 items-center hover:text-primary">{SOCIAL_NAMES[k] || k}</a>)}
+        {socials.map(([k, u]) => <a href={u} rel="noopener me" class="inline-flex min-h-10 items-center hover:text-primary-text">{SOCIAL_NAMES[k] || k}</a>)}
       </nav>
     )}
   </div>

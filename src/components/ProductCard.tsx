@@ -28,12 +28,12 @@ export default function ProductCard({ d }: { d: CardData }) {
     <TiltCard className="h-full rounded-xl">
       <a
         href={d.href}
-        className="group flex h-full flex-col overflow-hidden rounded-xl border bg-card squircle hover:border-primary/40 focus-visible:outline-offset-2"
+        className="group flex h-full flex-col overflow-hidden rounded-xl border bg-card squircle hover:border-primary-text/40 focus-visible:outline-offset-2"
       >
         <div className="relative">
           <Cover name={d.name} url={d.coverUrl} tint={d.tint} id={d.id} />
           {d.has3d && (
-            <span className="absolute left-3 top-3 z-[2] inline-flex items-center gap-1.5 rounded-md border border-primary/50 bg-background/80 px-2 py-1 font-mono text-[0.68rem] text-primary">
+            <span className="absolute left-3 top-3 z-[2] inline-flex items-center gap-1.5 rounded-md border border-primary-text/50 bg-background/80 px-2 py-1 font-mono text-[0.68rem] text-primary-text">
               <Cube size={13} weight="bold" aria-hidden /> 3D view
             </span>
           )}
@@ -48,7 +48,7 @@ export default function ProductCard({ d }: { d: CardData }) {
                 {d.price || "Available now"}
               </span>
             ) : (
-              <span className="rounded-md border border-primary/40 px-2 py-1 font-mono text-[0.7rem] text-primary">{d.status}</span>
+              <span className="rounded-md border border-primary-text/40 px-2 py-1 font-mono text-[0.7rem] text-primary-text">{d.status}</span>
             )}
             <span className="font-mono text-[0.68rem] text-muted-foreground">{d.stores.join(" · ")}</span>
           </span>

@@ -87,7 +87,7 @@ export default function CommandMenu({ items }: { items: CmdItem[] }) {
                           value={i.label}
                           keywords={i.keywords ? i.keywords.split(/\s+/) : undefined}
                           onSelect={() => go(i.href)}
-                          className="flex min-h-11 cursor-pointer items-center rounded-lg px-3 text-[0.95rem] data-[selected=true]:bg-secondary data-[selected=true]:text-primary"
+                          className="flex min-h-11 cursor-pointer items-center rounded-lg px-3 text-[0.95rem] data-[selected=true]:bg-secondary data-[selected=true]:text-primary-text"
                         >
                           {i.label}
                         </Command.Item>

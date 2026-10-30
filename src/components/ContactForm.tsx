@@ -31,7 +31,7 @@ export default function ContactForm({ email, topic: initialTopic = "" }: { email
       <h2 className="m-0 font-display text-3xl font-extrabold uppercase tracking-wide">Write a message</h2>
       <div className="grid gap-1.5">
         <label htmlFor="f-name" className="text-sm font-semibold">Your name</label>
-        <input id="f-name" name="name" autoComplete="name" className="min-h-12 rounded-lg border bg-background px-3.5 focus-visible:border-primary squircle" />
+        <input id="f-name" name="name" autoComplete="name" className="min-h-12 rounded-lg border bg-background px-3.5 focus-visible:border-primary-text squircle" />
       </div>
       <div className="grid gap-1.5">
         <label htmlFor="f-topic" className="text-sm font-semibold">What's it about?</label>
@@ -48,12 +48,12 @@ export default function ContactForm({ email, topic: initialTopic = "" }: { email
           rows={6}
           aria-invalid={errors.msg || undefined}
           aria-describedby={errors.msg ? "f-msg-err" : undefined}
-          className="rounded-lg border bg-background px-3.5 py-3 focus-visible:border-primary aria-[invalid=true]:border-destructive squircle"
+          className="rounded-lg border bg-background px-3.5 py-3 focus-visible:border-primary-text aria-[invalid=true]:border-destructive squircle"
         />
         {errors.msg && <p id="f-msg-err" className="m-0 text-sm text-destructive-text">Write a message first.</p>}
       </div>
       <label className="grid cursor-pointer grid-cols-[auto_1fr] items-start gap-3 text-sm text-muted-foreground">
-        <input ref={okRef} type="checkbox" name="ok" aria-invalid={errors.ok || undefined} aria-describedby={errors.ok ? "f-ok-err" : undefined} className="mt-0.5 size-5 accent-[hsl(164_52%_62%)]" />
+        <input ref={okRef} type="checkbox" name="ok" aria-invalid={errors.ok || undefined} aria-describedby={errors.ok ? "f-ok-err" : undefined} className="mt-0.5 size-5 accent-[#c8203c]" />
         <span>I understand this opens my own email app, and Iron Lantern Studios will reply to the address I send from.</span>
       </label>
       {errors.ok && <p id="f-ok-err" className="-mt-3 m-0 text-sm text-destructive-text">Tick the box to continue.</p>}
@@ -62,7 +62,7 @@ export default function ContactForm({ email, topic: initialTopic = "" }: { email
       </button>
       <AnimatePresence>
         {sent && (
-          <motion.p role="status" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={springs.standard} className="m-0 text-sm text-primary">
+          <motion.p role="status" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={springs.standard} className="m-0 text-sm text-primary-text">
             Your email app should be open with the message filled in. If nothing opened, write to {email}.
           </motion.p>
         )}

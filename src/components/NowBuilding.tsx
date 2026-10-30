@@ -108,7 +108,7 @@ export default function NowBuilding({ slides }: { slides: Slide[] }) {
               <p className="m-0 font-mono text-xs text-muted-foreground">{s.tag} · {s.status}</p>
               <h3 className="m-0 mt-1 font-display text-4xl font-extrabold uppercase leading-none tracking-wide">{s.name}</h3>
               {s.caption && <p className="m-0 mt-1.5 text-muted-foreground">{s.caption}</p>}
-              <a href={s.href} className="mt-2 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+              <a href={s.href} className="mt-2 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-primary-text hover:underline">
                 See the game <CaretRight size={14} weight="bold" aria-hidden />
               </a>
             </motion.div>
@@ -120,7 +120,7 @@ export default function NowBuilding({ slides }: { slides: Slide[] }) {
               <button key={sl.id} type="button" role="tab" aria-selected={j === i} aria-label={`Show ${sl.name}`} onClick={() => go(j)} className="grid size-11 place-items-center">
                 <motion.span
                   className="block h-2 rounded-full"
-                  animate={{ width: j === i ? 26 : 8, backgroundColor: j === i ? "hsl(164 52% 62%)" : "hsl(180 30% 22%)" }}
+                  animate={{ width: j === i ? 26 : 8, backgroundColor: j === i ? "#c8203c" : "#34353c" }}
                   transition={springs.standard}
                 />
               </button>

@@ -4,7 +4,7 @@
 import * as THREE from "three";
 import { motionValue, animate } from "motion";
 
-const BG = 0x061212;
+const BG = 0x131418;
 const INTERNAL_WIDTH = 320; // the PS1 drew at 320 px wide
 const SPRING_STANDARD = { type: "spring", stiffness: 260, damping: 20 };
 const SPRING_MICRO = { type: "spring", stiffness: 400, damping: 40 };
@@ -34,9 +34,9 @@ const flat = (color, snap, extra = {}) =>
 const SCENES = {
   lantern(snap) {
     const g = new THREE.Group();
-    const iron = flat(0x3a4040, snap), ironDark = flat(0x232828, snap);
-    const glass = flat(0x7fb5a8, snap, { transparent: true, opacity: 0.16, depthWrite: false });
-    const flameMat = psxify(new THREE.MeshBasicMaterial({ color: 0xc4f0de }), snap);
+    const iron = flat(0x3b3c42, snap), ironDark = flat(0x24252a, snap);
+    const glass = flat(0xb0a4a8, snap, { transparent: true, opacity: 0.16, depthWrite: false });
+    const flameMat = psxify(new THREE.MeshBasicMaterial({ color: 0xffc2c8 }), snap);
     const add = (geo, mat, x = 0, y = 0, z = 0, ry = 0) => {
       const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.y = ry; g.add(m); return m;
     };
@@ -55,10 +55,10 @@ const SCENES = {
     add(new THREE.TorusGeometry(0.17, 0.03, 4, 8), iron, 0, 1.82, 0);
     add(new THREE.CylinderGeometry(0.1, 0.12, 0.14, 6), ironDark, 0, 0.25, 0);
     const flame = add(new THREE.ConeGeometry(0.07, 0.24, 5), flameMat, 0, 0.44, 0);
-    const light = new THREE.PointLight(0x9fe0c8, 6, 6, 1.6);
+    const light = new THREE.PointLight(0xe0364f, 7, 6, 1.6);
     light.position.set(0, 0.55, 0);
     g.add(light);
-    const wood = flat(0x262826, snap), woodDark = flat(0x1a1d1c, snap);
+    const wood = flat(0x29272a, snap), woodDark = flat(0x1c1b1e, snap);
     const crate = new THREE.Group();
     crate.add(new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.8, 1.2), wood));
     for (const y of [-0.3, 0.3]) {
@@ -66,7 +66,7 @@ const SCENES = {
     }
     crate.position.y = -0.4;
     g.add(crate);
-    const can = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.3, 7), flat(0x30393a, snap));
+    const can = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.3, 7), flat(0x34363c, snap));
     can.position.set(0.52, 0.15, 0.25); g.add(can);
     const book = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.07, 0.3), flat(0x3a2a2e, snap));
     book.position.set(-0.5, 0.035, 0.2); book.rotation.y = 0.4; g.add(book);
@@ -133,11 +133,11 @@ export async function mountViewport(stage, opts = {}) {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(BG);
   scene.fog = new THREE.Fog(BG, 3.2, 8.5);
-  scene.add(new THREE.HemisphereLight(0x8aa69e, 0x070d0d, 0.9));
-  const moon = new THREE.DirectionalLight(0xb7cfd2, 0.65);
+  scene.add(new THREE.HemisphereLight(0x8f93a3, 0x0a0a0d, 0.85));
+  const moon = new THREE.DirectionalLight(0xbcc3d6, 0.6);
   moon.position.set(-3, 4, 2);
   scene.add(moon);
-  const floor = new THREE.Mesh(new THREE.CircleGeometry(4, 10), flat(0x0c1818, snap));
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(4, 10), flat(0x18191d, snap));
   floor.rotation.x = -Math.PI / 2; floor.position.y = -1.0;
   scene.add(floor);
 
@@ -243,7 +243,7 @@ export async function mountViewport(stage, opts = {}) {
     }
     if (built.light && !reduced) {
       const t = now / 1000;
-      built.light.intensity = 6 * (0.86 + 0.08 * Math.sin(t * 7.3) + 0.06 * Math.sin(t * 17.1 + 1.3));
+      built.light.intensity = 7 * (0.86 + 0.08 * Math.sin(t * 7.3) + 0.06 * Math.sin(t * 17.1 + 1.3));
       if (built.flame) built.flame.scale.y = 0.9 + 0.12 * Math.sin(t * 9.1);
     }
     render();

@@ -1,18 +1,20 @@
 /*
-  Design direction: a late-night PS1 horror studio. Cold teal-black like a CRT left on in a dark
-  room, phosphor-green readouts, one drop of crimson for anything live or dangerous.
+  Design direction: a late-night PS1 horror studio. Cold slate-charcoal like a dark room lit by a
+  monitor, with blood crimson for anything you can press or anything live.
   Dials: DESIGN_VARIANCE 7 (full-bleed heroes, asymmetric splits), MOTION_INTENSITY 6
   (springs on entrances, hover tilt, live 3D), VISUAL_DENSITY 4 (spacious, few items per row).
 
-  Theme: "Emerald Dark" by ndlprecieux (21st.dev community themes), dark variant.
-  Kept: its teal-tinted neutrals (background, card, muted, border) and crimson destructive.
-  Changed: its primary hsl(171 90% 50%) reads as neon, so it is desaturated to a phosphor
-  green that still passes WCAG AA as text. Self-check: background, surface and text are cool
-  teal; accent hue 164. No orange, no cream.
+  Theme: "Red Dark" by kartman.sms (21st.dev community themes), dark variant.
+  Kept: its crimson primary (hue 345-350) and its near-black surfaces, nudged cool toward slate
+  so the red reads colder and the page never looks warm. Its 100%-saturated primary is too loud
+  for this site and fails contrast as text, so the crimson is split in two:
+    --primary       #c8203c  fills: buttons, selected chips, focus underline (light text on it 5.0:1)
+    --primary-text  #f0566b  text and outlines on the dark background (5.4:1)
+  Self-check: background, surface and text are cool slate; accent hue 350. No orange, no cream.
 
   Fonts (self-hosted through Fontsource, SIL OFL 1.1):
   Big Shoulders Display for titles (condensed, industrial, poster-like),
-  Plus Jakarta Sans for body (from the theme), Fira Code for readouts (from the theme).
+  Plus Jakarta Sans for body, Fira Code for readouts.
 */
 @import "tailwindcss";
 @import "@fontsource-variable/big-shoulders-display";
@@ -20,27 +22,28 @@
 @import "@fontsource-variable/fira-code";
 
 :root {
-  --background: hsl(180 50% 4%);
-  --foreground: hsl(170 20% 94%);
-  --card: hsl(180 45% 7%);
-  --card-foreground: hsl(170 20% 94%);
-  --popover: hsl(180 45% 7%);
-  --popover-foreground: hsl(170 20% 94%);
-  --primary: hsl(164 52% 62%);
-  --primary-foreground: hsl(180 50% 5%);
-  --secondary: hsl(185 40% 13%);
-  --secondary-foreground: hsl(185 50% 88%);
-  --muted: hsl(180 30% 11%);
-  --muted-foreground: hsl(170 10% 68%);
-  --accent: hsl(190 50% 14%);
-  --accent-foreground: hsl(190 70% 90%);
-  --destructive: hsl(345 80% 48%);
-  --destructive-text: hsl(345 85% 70%);
-  --border: hsl(180 30% 16%);
-  --input: hsl(180 30% 18%);
-  --ring: hsl(164 52% 62%);
+  --background: #15161a;
+  --foreground: #ececee;
+  --card: #1c1d22;
+  --card-foreground: #ececee;
+  --popover: #1c1d22;
+  --popover-foreground: #ececee;
+  --primary: #c8203c;
+  --primary-foreground: #fbeef0;
+  --primary-text: #f0566b;
+  --secondary: #26262c;
+  --secondary-foreground: #ececee;
+  --muted: #222328;
+  --muted-foreground: #9a9ca6;
+  --accent: #2a1d21;
+  --accent-foreground: #f6dfe3;
+  --destructive: #c8203c;
+  --destructive-text: #f0566b;
+  --border: #2b2c32;
+  --input: #303138;
+  --ring: #f0566b;
   --radius: 0.875rem;
-  --shade: hsl(180 60% 2% / 0.72);
+  --shade: rgb(8 8 10 / 0.74);
   color-scheme: dark;
 }
 
@@ -53,6 +56,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-text: var(--primary-text);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -85,7 +89,7 @@
     -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3 { text-wrap: balance; }
-  ::selection { background: hsl(164 52% 62% / 0.3); }
+  ::selection { background: rgb(200 32 60 / 0.4); }
   :focus-visible { outline: 2px solid var(--color-ring); outline-offset: 3px; border-radius: 4px; }
 
   /* No scrollbars anywhere. Wheel, touch, keys and drag still scroll. */
@@ -107,13 +111,13 @@
     font-size: 0.72rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--color-primary);
+    color: var(--color-primary-text);
   }
   .squircle { corner-shape: squircle; }
   /* Faint CRT scanlines for media surfaces. The element sets its own position. */
   .scanlines::after {
     content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
-    background: repeating-linear-gradient(to bottom, hsl(180 60% 2% / 0.22) 0 1px, transparent 1px 3px);
+    background: repeating-linear-gradient(to bottom, rgb(6 6 8 / 0.22) 0 1px, transparent 1px 3px);
   }
 }
 
